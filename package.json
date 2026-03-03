@@ -10,7 +10,7 @@
     "cf:build": "opennextjs-cloudflare",
     "cf:preview": "opennextjs-cloudflare && wrangler dev",
     "cf:deploy": "opennextjs-cloudflare && wrangler deploy",
-    "db:push": "supabase link --project-ref $SUPABASE_PROJECT_REF && supabase db push --yes"
+    "db:push": "npx supabase link --project-ref $SUPABASE_PROJECT_REF && npx supabase db push --yes"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.0.2",

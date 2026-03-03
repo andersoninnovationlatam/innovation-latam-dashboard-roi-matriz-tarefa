@@ -54,6 +54,7 @@ O projeto usa o **Supabase CLI** para que migrações e consultas possam ser fei
   - `npx supabase migration new <nome>` — cria nova migração
   - `npx supabase db reset` — aplica migrações no ambiente local (requer `supabase start`)
   - `npx supabase db push` — aplica migrações no projeto remoto (após `supabase link --project-ref <ref>`)
+- **Sem login interativo:** defina `SUPABASE_ACCESS_TOKEN` e `SUPABASE_PROJECT_REF` (ver `.env.example`) e rode `npm run db:push` para aplicar migrações no remoto sem `supabase login`. Detalhes em [docs/supabase-terminal.md](docs/supabase-terminal.md).
 
 Documentação completa: [docs/supabase-terminal.md](docs/supabase-terminal.md).
 

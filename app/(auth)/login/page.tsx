@@ -50,10 +50,12 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Entrar</CardTitle>
-        <CardDescription>Use seu e-mail e senha para acessar.</CardDescription>
+    <Card className="border border-border bg-card shadow-md rounded-xl">
+      <CardHeader className="space-y-1.5">
+        <CardTitle className="text-xl font-bold text-foreground">Entrar</CardTitle>
+        <CardDescription className="text-muted-foreground">
+          Entre com seu e-mail e senha para acessar.
+        </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
@@ -63,12 +65,15 @@ export default function LoginPage() {
             </p>
           )}
           <div className="space-y-2">
-            <Label htmlFor="email">E-mail</Label>
+            <Label htmlFor="email" className="text-foreground font-medium">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
               placeholder="seu@email.com"
               autoComplete="email"
+              className="border-input bg-background"
               {...register("email")}
             />
             {errors.email && (
@@ -76,11 +81,14 @@ export default function LoginPage() {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
+            <Label htmlFor="password" className="text-foreground font-medium">
+              Senha
+            </Label>
             <Input
               id="password"
               type="password"
               autoComplete="current-password"
+              className="border-input bg-background"
               {...register("password")}
             />
             {errors.password && (
@@ -90,16 +98,23 @@ export default function LoginPage() {
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <CardFooter className="flex flex-col gap-4 pt-0">
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-md font-medium bg-primary text-primary-foreground hover:bg-primary/90"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Entrando…" : "Entrar"}
           </Button>
-          <Link
-            href="/cadastro"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Não tem conta? Criar conta
-          </Link>
+          <p className="text-sm text-muted-foreground text-center">
+            Não tem conta?{" "}
+            <Link
+              href="/cadastro"
+              className="text-foreground font-medium underline underline-offset-4 hover:text-primary"
+            >
+              Criar conta
+            </Link>
+          </p>
         </CardFooter>
       </form>
     </Card>

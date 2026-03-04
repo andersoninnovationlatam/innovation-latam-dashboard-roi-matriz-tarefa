@@ -64,7 +64,7 @@ Documentação completa: [docs/supabase-terminal.md](docs/supabase-terminal.md).
 
 - **Build para Cloudflare:**  
   `npm run cf:build`  
-  Gera a pasta `.open-next/` (incluída no `.gitignore`). O `next.config.ts` chama `initOpenNextCloudflareForDev()` para integração com Wrangler no dev; em ambientes restritos (ex.: CI ou sandbox sem permissão de escrita em `~/.config`), `npm run lint`, `npm run build` e `npm run cf:build` podem falhar ao criar `~/.config/.wrangler`. Nesses casos, rode com permissões que permitam escrita no diretório de config do usuário ou desabilite temporariamente a chamada em `next.config.ts`.
+  Gera a pasta `.open-next/` (incluída no `.gitignore`), incluindo o `worker.js` que o Wrangler usa no deploy. O `next.config.ts` chama `initOpenNextCloudflareForDev()` para integração com Wrangler no dev; em ambientes restritos (ex.: CI ou sandbox sem permissão de escrita em `~/.config`), `npm run lint`, `npm run build` e `npm run cf:build` podem falhar ao criar `~/.config/.wrangler`. Nesses casos, rode com permissões que permitam escrita no diretório de config do usuário ou desabilite temporariamente a chamada em `next.config.ts`.
 
 - **Preview local ( Workers runtime):**  
   `npm run cf:preview`  
@@ -73,6 +73,19 @@ Documentação completa: [docs/supabase-terminal.md](docs/supabase-terminal.md).
 - **Deploy:**  
   `npm run cf:deploy`  
   Faz o build e publica no Cloudflare Workers. Configure as variáveis de ambiente (Supabase) como [secrets](https://developers.cloudflare.com/workers/configuration/secrets/) no Workers ou no dashboard.
+
+### Deploy no Cloudflare (CI/CD, Pages, etc.)
+
+Se você configura o build e o deploy **no dashboard da Cloudflare** (ou em outro CI), use:
+
+| Campo | Valor |
+|-------|--------|
+| **Build command** | `npm run cf:build` (e não `npm run build`) |
+| **Deploy command** | `npx wrangler deploy` |
+
+O arquivo `.open-next/worker.js` só é criado pelo **cf:build** (OpenNext). Se o build for só `npm run build`, o deploy falha com *"The entry-point file at .open-next/worker.js was not found"*. O build e o deploy devem rodar no mesmo ambiente (o deploy usa a pasta `.open-next/` gerada no build).
+
+Exemplo de build command completo: `npm ci && npm run cf:build`.
 
 Configuração: `wrangler.jsonc` (e `open-next.config.ts` para OpenNext).
 

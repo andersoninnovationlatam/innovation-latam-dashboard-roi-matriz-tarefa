@@ -40,6 +40,11 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      fontFamily: {
+        body: ["var(--font-inter)", "Inter", "sans-serif"],
+        headline: ["var(--font-manrope)", "Manrope", "sans-serif"],
+        label: ["var(--font-inter)", "Inter", "sans-serif"],
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

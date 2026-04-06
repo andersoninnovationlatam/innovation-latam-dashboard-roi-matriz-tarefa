@@ -1,10 +1,23 @@
 import type { Metadata } from "next";
+import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Fullstack Starter",
-  description: "Boilerplate Next.js + Supabase + Cloudflare Workers",
+  title: "Fábrica de Inovação | Innovation Latam",
+  description: "Plataforma de gestão de projetos de inovação - Innovation Hub Analytical Atelier",
 };
 
 export default function RootLayout({
@@ -14,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body>
+      <body className={`${manrope.variable} ${inter.variable}`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

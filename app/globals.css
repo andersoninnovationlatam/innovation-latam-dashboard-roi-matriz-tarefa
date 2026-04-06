@@ -4,44 +4,134 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 322 71% 35%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 174 47% 51%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 322 71% 35%;
+    /* Material Design 3 Tonal Palette - Light Mode */
+    --surface-dim: #e7d5de;
+    --on-error: #ffffff;
+    --on-primary-fixed-variant: #850273;
+    --tertiary-fixed: #cdef88;
+    --surface-variant: #f0dee6;
+    --background: #fff8f9;
+    --on-secondary-fixed-variant: #00504e;
+    --on-primary: #ffffff;
+    --primary-fixed-dim: #ffade6;
+    --on-tertiary-fixed: #141f00;
+    --on-secondary-fixed: #00201f;
+    --primary-container: #951b81;
+    --primary: #730064;
+    --on-secondary: #ffffff;
+    --on-error-container: #93000a;
+    --secondary: #006a67;
+    --on-surface-variant: #53424d;
+    --tertiary-fixed-dim: #b2d26f;
+    --primary-fixed: #ffd7ef;
+    --tertiary-container: #425c00;
+    --inverse-on-surface: #ffecf5;
+    --surface-container-high: #f6e3ec;
+    --on-tertiary-container: #b3d470;
+    --on-primary-container: #ffafe6;
+    --secondary-container: #85f1ed;
+    --outline: #86717d;
+    --surface-container: #fce9f2;
+    --secondary-fixed-dim: #6ad8d3;
+    --inverse-primary: #ffade6;
+    --surface-container-low: #fff0f6;
+    --surface-container-highest: #f0dee6;
+    --on-secondary-container: #006e6c;
+    --surface-tint: #a2298d;
+    --outline-variant: #d8c0cd;
+    --secondary-fixed: #88f4f0;
+    --error: #ba1a1a;
+    --surface: #fff8f9;
+    --tertiary: #2f4300;
+    --on-primary-fixed: #3a0031;
+    --on-tertiary-fixed-variant: #374e00;
+    --surface-container-lowest: #ffffff;
+    --on-tertiary: #ffffff;
+    --on-surface: #22191f;
+    --on-background: #22191f;
+    --error-container: #ffdad6;
+    --surface-bright: #fff8f9;
+    --inverse-surface: #382d34;
+    
+    /* Shadcn/ui compatibility */
+    --foreground: var(--on-surface);
+    --muted: var(--surface-container-high);
+    --muted-foreground: var(--on-surface-variant);
+    --accent: var(--surface-container-low);
+    --accent-foreground: var(--on-surface);
+    --destructive: var(--error);
+    --destructive-foreground: var(--on-error);
+    --card: var(--surface-container-lowest);
+    --card-foreground: var(--on-surface);
+    --border: var(--outline-variant);
+    --input: var(--outline-variant);
+    --ring: var(--primary);
     --radius: 0.5rem;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --primary: 322 71% 45%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 174 47% 41%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 322 71% 45%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Dark mode - Material Design 3 dark scheme */
+    --surface-dim: #382d34;
+    --on-error: #690005;
+    --on-primary-fixed-variant: #850273;
+    --tertiary-fixed: #cdef88;
+    --surface-variant: #53424d;
+    --background: #22191f;
+    --on-secondary-fixed-variant: #00504e;
+    --on-primary: #5c004f;
+    --primary-fixed-dim: #ffade6;
+    --on-tertiary-fixed: #141f00;
+    --on-secondary-fixed: #00201f;
+    --primary-container: #951b81;
+    --primary: #ffafe6;
+    --on-secondary: #003736;
+    --on-error-container: #ffdad6;
+    --secondary: #49bab6;
+    --on-surface-variant: #d8c0cd;
+    --tertiary-fixed-dim: #b2d26f;
+    --primary-fixed: #ffd7ef;
+    --tertiary-container: #425c00;
+    --inverse-on-surface: #382d34;
+    --surface-container-high: #3a2f35;
+    --on-tertiary-container: #b3d470;
+    --on-primary-container: #ffafe6;
+    --secondary-container: #006a67;
+    --outline: #a08a96;
+    --surface-container: #32282e;
+    --secondary-fixed-dim: #6ad8d3;
+    --inverse-primary: #a2298d;
+    --surface-container-low: #2a1f25;
+    --surface-container-highest: #42363d;
+    --on-secondary-container: #88f4f0;
+    --surface-tint: #ffafe6;
+    --outline-variant: #53424d;
+    --secondary-fixed: #88f4f0;
+    --error: #ffb4ab;
+    --surface: #22191f;
+    --tertiary: #b3d470;
+    --on-primary-fixed: #3a0031;
+    --on-tertiary-fixed-variant: #374e00;
+    --surface-container-lowest: #1a1418;
+    --on-tertiary: #222e00;
+    --on-surface: #f0dee6;
+    --on-background: #f0dee6;
+    --error-container: #93000a;
+    --surface-bright: #4f4249;
+    --inverse-surface: #f0dee6;
+
+    /* Shadcn/ui compatibility for dark */
+    --foreground: var(--on-surface);
+    --muted: var(--surface-container-high);
+    --muted-foreground: var(--on-surface-variant);
+    --accent: var(--surface-container-low);
+    --accent-foreground: var(--on-surface);
+    --destructive: var(--error);
+    --destructive-foreground: var(--on-error);
+    --card: var(--surface-container-lowest);
+    --card-foreground: var(--on-surface);
+    --border: var(--outline-variant);
+    --input: var(--outline-variant);
+    --ring: var(--primary);
   }
 }
 
@@ -50,6 +140,39 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased font-body;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+}
+
+@layer utilities {
+  .headline-font {
+    font-family: var(--font-manrope), 'Manrope', sans-serif;
+  }
+  
+  .glass-panel {
+    background: rgba(255, 248, 249, 0.7);
+    backdrop-filter: blur(20px);
+  }
+  
+  .bg-mesh {
+    background-color: #fff8f9;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(149, 27, 129, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(0, 106, 103, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(149, 27, 129, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(0, 106, 103, 0.05) 0px, transparent 50%);
+  }
+  
+  .dark .bg-mesh {
+    background-color: #22191f;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(255, 175, 230, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(73, 186, 182, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(255, 175, 230, 0.05) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(73, 186, 182, 0.05) 0px, transparent 50%);
   }
 }

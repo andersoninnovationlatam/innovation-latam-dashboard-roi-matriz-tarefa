@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { signOut } from "@/server/actions/auth";
+import { SideNav } from "@/components/layout/side-nav";
+import { TopAppBar } from "@/components/layout/top-app-bar";
 
 export default async function DashboardLayout({
   children,
@@ -18,22 +17,18 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  // Buscar perfil do usuário
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, full_name")
+    .eq("id", user.id)
+    .single();
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b flex items-center justify-between px-4 py-3">
-        <span className="text-sm text-muted-foreground">Fullstack Starter</span>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <form action={signOut}>
-            <Button type="submit" variant="ghost" size="sm">
-              Sair
-            </Button>
-          </form>
-        </div>
-      </header>
-      <main className="flex-1 flex items-center justify-center p-8">
-        {children}
-      </main>
+    <div className="min-h-screen">
+      <SideNav userRole={profile?.role as "gestor" | "consultor" | "viewer"} />
+      <TopAppBar userEmail={user.email || undefined} userName={profile?.full_name || undefined} />
+      <main className="pl-64 pt-16 min-h-screen">{children}</main>
     </div>
   );
 }

@@ -6,10 +6,13 @@ import { CreateMeetingForm } from "@/components/features/forms/create-meeting-fo
 
 interface NewMeetingButtonProps {
   projectId: string;
+  isGestor?: boolean;
 }
 
-export function NewMeetingButton({ projectId }: NewMeetingButtonProps) {
+export function NewMeetingButton({ projectId, isGestor = false }: NewMeetingButtonProps) {
   const [open, setOpen] = useState(false);
+
+  if (!isGestor) return null;
 
   return (
     <>

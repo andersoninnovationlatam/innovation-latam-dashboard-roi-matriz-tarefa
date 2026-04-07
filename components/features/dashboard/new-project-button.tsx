@@ -6,10 +6,13 @@ import { CreateProjectForm } from "@/components/features/forms/create-project-fo
 
 interface NewProjectButtonProps {
   clientId: string;
+  isGestor?: boolean;
 }
 
-export function NewProjectButton({ clientId }: NewProjectButtonProps) {
+export function NewProjectButton({ clientId, isGestor = false }: NewProjectButtonProps) {
   const [open, setOpen] = useState(false);
+
+  if (!isGestor) return null;
 
   return (
     <>

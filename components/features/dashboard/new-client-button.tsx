@@ -4,8 +4,15 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { CreateClientForm } from "@/components/features/forms/create-client-form";
 
-export function NewClientButton() {
+interface NewClientButtonProps {
+  /** Somente gestor pode criar clientes (RLS + UI). */
+  isGestor?: boolean;
+}
+
+export function NewClientButton({ isGestor = false }: NewClientButtonProps) {
   const [open, setOpen] = useState(false);
+
+  if (!isGestor) return null;
 
   return (
     <>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProjectDetail, getProjectMeetings } from "@/server/actions/projects";
+import { getUserRole } from "@/server/auth/role";
 import { HealthBadge } from "@/components/features/dashboard/health-badge";
 import { NewMeetingButton } from "@/components/features/dashboard/new-meeting-button";
 import {
@@ -23,6 +24,9 @@ interface ProjectDetailPageProps {
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { clienteId, projetoId } = await params;
+
+  const role = await getUserRole();
+  const isGestor = role === "gestor";
 
   let projectData;
   let meetings;
@@ -192,7 +196,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           <section>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-headline font-bold">Meeting History</h2>
-              <NewMeetingButton projectId={projetoId} />
+              <NewMeetingButton projectId={projetoId} isGestor={isGestor} />
             </div>
             <div className="space-y-4">
               {meetings.map((meeting: any) => (
@@ -332,15 +336,16 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         </div>
       </div>
 
-      {/* Floating Action Button */}
-      <div className="fixed bottom-8 right-8 flex flex-col gap-4">
-        <Button
-          size="icon"
-          className="w-14 h-14 bg-primary-container text-on-primary-container rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-        >
-          <Edit className="w-6 h-6" />
-        </Button>
-      </div>
+      {isGestor && (
+        <div className="fixed bottom-8 right-8 flex flex-col gap-4">
+          <Button
+            size="icon"
+            className="w-14 h-14 bg-primary-container text-on-primary-container rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+          >
+            <Edit className="w-6 h-6" />
+          </Button>
+        </div>
+      )}
     </main>
   );
 }

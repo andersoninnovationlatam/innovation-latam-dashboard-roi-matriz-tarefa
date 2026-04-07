@@ -1,11 +1,16 @@
 import { getClientOverview } from "@/server/actions/clients";
+import { getUserRole } from "@/server/auth/role";
 import { ClientCard } from "@/components/features/dashboard/client-card";
 import { MetricCard } from "@/components/features/dashboard/metric-card";
 import { NewClientButton } from "@/components/features/dashboard/new-client-button";
 import { Users, Rocket, AlertTriangle, Calendar } from "lucide-react";
 
 export default async function DashboardPage() {
-  const clientsData = await getClientOverview();
+  const [clientsData, role] = await Promise.all([
+    getClientOverview(),
+    getUserRole(),
+  ]);
+  const isGestor = role === "gestor";
 
   // Calcular métricas agregadas
   const totalClients = clientsData.length;
@@ -33,7 +38,7 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <NewClientButton />
+          <NewClientButton isGestor={isGestor} />
         </div>
       </header>
 

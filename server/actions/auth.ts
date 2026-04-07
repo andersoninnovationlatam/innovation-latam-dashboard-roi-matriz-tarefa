@@ -25,9 +25,19 @@ export async function signIn(email: string, password: string) {
   return { error: null };
 }
 
-export async function signUp(email: string, password: string) {
+export async function signUp(
+  email: string,
+  password: string,
+  fullName?: string
+) {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: fullName
+      ? { data: { full_name: fullName } }
+      : undefined,
+  });
   if (error) return { error: translateAuthError(error.message) };
   return { error: null };
 }

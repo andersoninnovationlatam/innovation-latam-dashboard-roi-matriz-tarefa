@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getClientDetail } from "@/server/actions/clients";
+import { getUserRole } from "@/server/auth/role";
 import { HealthBadge } from "@/components/features/dashboard/health-badge";
 import { NewProjectButton } from "@/components/features/dashboard/new-project-button";
 import { AlertTriangle, Zap, ArrowRight, AlertCircle } from "lucide-react";
@@ -11,7 +12,10 @@ interface ClientDetailPageProps {
 
 export default async function ClientDetailPage({ params }: ClientDetailPageProps) {
   const { clienteId } = await params;
-  
+
+  const role = await getUserRole();
+  const isGestor = role === "gestor";
+
   let clientData;
   try {
     clientData = await getClientDetail(clienteId);
@@ -65,7 +69,7 @@ export default async function ClientDetailPage({ params }: ClientDetailPageProps
           <div className="bg-surface-container-low rounded-xl p-8 border-none">
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-xl font-bold text-on-surface">Strategic Initiatives</h2>
-              <NewProjectButton clientId={clienteId} />
+              <NewProjectButton clientId={clienteId} isGestor={isGestor} />
             </div>
             <div className="overflow-hidden">
               <table className="w-full text-left">

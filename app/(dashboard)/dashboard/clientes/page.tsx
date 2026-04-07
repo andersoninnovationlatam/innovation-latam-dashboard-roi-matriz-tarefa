@@ -1,10 +1,15 @@
 import { getClientOverview } from "@/server/actions/clients";
+import { getUserRole } from "@/server/auth/role";
 import { ClientCard } from "@/components/features/dashboard/client-card";
 import { NewClientButton } from "@/components/features/dashboard/new-client-button";
 import { Users } from "lucide-react";
 
 export default async function ClientsListPage() {
-  const clientsData = await getClientOverview();
+  const [clientsData, role] = await Promise.all([
+    getClientOverview(),
+    getUserRole(),
+  ]);
+  const isGestor = role === "gestor";
 
   const totalClients = clientsData.length;
   const criticalCount = clientsData.filter((c) => c.latestHealth === "critical").length;
@@ -24,7 +29,7 @@ export default async function ClientsListPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <NewClientButton />
+          <NewClientButton isGestor={isGestor} />
         </div>
       </header>
 

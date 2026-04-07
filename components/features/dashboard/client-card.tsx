@@ -20,7 +20,6 @@ export function ClientCard({
   latestHealth,
   latestMeeting,
   parecerExcerpt,
-  activeProjects = 0,
 }: ClientCardProps) {
   const { lang, t } = useLanguage();
   const locale = lang === "pt" ? "pt-BR" : "en-US";
@@ -75,7 +74,8 @@ export function ClientCard({
               "{excerpt}"
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="flex justify-end gap-4 pt-2">
+            {/* Contagem de projetos ativos (active_projects na view) — desativada até o dado estar correto
             <div className="flex flex-col">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                 {t("client_card_active_projects")}
@@ -84,6 +84,7 @@ export function ClientCard({
                 {activeProjects}
               </span>
             </div>
+            */}
             <div className="flex flex-col items-end">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                 {t("client_card_last_meeting")}

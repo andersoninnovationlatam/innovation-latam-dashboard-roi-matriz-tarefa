@@ -5,15 +5,32 @@ import { HealthBadge } from "@/components/features/dashboard/health-badge";
 import { NewProjectButton } from "@/components/features/dashboard/new-project-button";
 import { AlertTriangle, Zap, ArrowRight, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
-import type { HealthStatus, Meeting } from "@/lib/types/domain";
+import type { HealthStatus, Meeting, ProjectStatus } from "@/lib/types/domain";
+import type { TranslationKey } from "@/lib/i18n/translations";
 
 export type ClientDetailProjectRow = {
   id: string;
   name: string;
   description: string;
+  status: ProjectStatus;
   healthStatus: HealthStatus;
   completion: number;
 };
+
+function projectStatusTranslationKey(status: ProjectStatus): TranslationKey {
+  switch (status) {
+    case "active":
+      return "project_status_active";
+    case "paused":
+      return "project_status_paused";
+    case "completed":
+      return "project_status_completed";
+    case "at_risk":
+      return "project_status_at_risk";
+    default:
+      return "project_status_active";
+  }
+}
 
 interface ClientDetailViewProps {
   clienteId: string;
@@ -103,6 +120,7 @@ export function ClientDetailView({
                 <thead>
                   <tr className="text-on-surface-variant/60 text-[10px] uppercase tracking-[0.2em] font-bold">
                     <th className="pb-4">{t("client_detail_col_project_identity")}</th>
+                    <th className="pb-4">{t("client_detail_col_project_status")}</th>
                     <th className="pb-4">{t("client_detail_col_health_status")}</th>
                     <th className="pb-4 text-right">{t("client_detail_col_completion")}</th>
                   </tr>
@@ -125,6 +143,11 @@ export function ClientDetailView({
                             {project.description || t("client_detail_no_project_description")}
                           </span>
                         </div>
+                      </td>
+                      <td className="py-6">
+                        <span className="text-sm font-medium text-on-surface">
+                          {t(projectStatusTranslationKey(project.status))}
+                        </span>
                       </td>
                       <td className="py-6">
                         <HealthBadge status={project.healthStatus} />

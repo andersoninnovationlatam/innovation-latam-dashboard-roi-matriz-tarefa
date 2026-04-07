@@ -9,6 +9,7 @@ import type {
   HealthStatus,
   Meeting,
   ProjectCurrentHealth,
+  ProjectStatus,
 } from "@/lib/types/domain";
 
 export type ClientOverviewItem = {
@@ -124,6 +125,8 @@ export type ClientDetailData = {
     id: string;
     name: string;
     description: string;
+    /** `projects.status` (enum tipo `project_status` no Postgres). */
+    status: ProjectStatus;
     healthStatus: HealthStatus;
     completion: number;
   }>;
@@ -173,6 +176,7 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
       id: p.id,
       name: p.name,
       description: p.description ?? "",
+      status: p.status as ProjectStatus,
       healthStatus,
       completion,
     };

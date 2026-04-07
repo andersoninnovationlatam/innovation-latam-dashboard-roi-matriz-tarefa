@@ -67,6 +67,7 @@ const translations = {
       "Operador logístico multimodal de referência. Foco em transporte costeiro e gestão de terminais na região do Mercosul.",
     client_detail_strategic_initiatives: "Iniciativas estratégicas",
     client_detail_col_project_identity: "Identidade do projeto",
+    client_detail_col_project_status: "Status do projeto",
     client_detail_col_health_status: "Status de saúde",
     client_detail_col_completion: "Conclusão",
     client_detail_no_project_description: "Sem descrição",
@@ -88,6 +89,12 @@ const translations = {
     clients_list_subtitle:
       "Gerencie e acompanhe todos os relacionamentos com clientes.",
     clients_summary_total: "Total",
+
+    // Project lifecycle status (`projects.status` / enum project_status)
+    project_status_active: "Ativo",
+    project_status_paused: "Pausado",
+    project_status_completed: "Concluído",
+    project_status_at_risk: "Em risco",
 
     // Project
     proj_overall_health: "Saúde Geral",
@@ -310,6 +317,7 @@ const translations = {
       "Leading multimodal logistics operator. Primary focus on coastal shipping and terminal management across the Mercosur region.",
     client_detail_strategic_initiatives: "Strategic Initiatives",
     client_detail_col_project_identity: "Project Identity",
+    client_detail_col_project_status: "Project status",
     client_detail_col_health_status: "Health Status",
     client_detail_col_completion: "Completion",
     client_detail_no_project_description: "No description",
@@ -330,6 +338,12 @@ const translations = {
     // Clients list page (/dashboard/clientes)
     clients_list_subtitle: "Manage and monitor all client engagements.",
     clients_summary_total: "Total",
+
+    // Project lifecycle status (`projects.status` / enum project_status)
+    project_status_active: "Active",
+    project_status_paused: "Paused",
+    project_status_completed: "Completed",
+    project_status_at_risk: "At risk",
 
     // Project
     proj_overall_health: "Overall Health",

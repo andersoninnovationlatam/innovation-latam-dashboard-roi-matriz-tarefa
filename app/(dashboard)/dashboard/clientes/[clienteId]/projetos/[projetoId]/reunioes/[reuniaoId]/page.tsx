@@ -3,7 +3,6 @@ import Link from "next/link";
 import { getMeetingInsights } from "@/server/actions/meetings";
 import { getUserRole } from "@/server/auth/role";
 import { DeleteMeetingButton } from "@/components/features/dashboard/delete-meeting-button";
-import { GenerateInsightsButton } from "@/components/features/dashboard/generate-insights-button";
 import {
   ChevronRight,
   User,
@@ -53,12 +52,7 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
       <main className="max-w-[1440px] mx-auto p-12">
         <div className="text-center py-12 flex flex-col items-center gap-6">
           <p className="text-on-surface-variant">Insights não disponíveis para esta reunião.</p>
-          {role === "gestor" && (
-            <GenerateInsightsButton
-              meetingId={reuniaoId}
-              hasNotes={!!meeting.raw_notes}
-            />
-          )}
+          {/* meet_generate_insights: neste contexto não é necessário gerar insights com IA */}
           <Link
             href={`/dashboard/clientes/${clienteId}/projetos/${projetoId}`}
             className="text-primary font-bold text-sm hover:underline"
@@ -91,8 +85,8 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
     healthStatus === "critical"
       ? "bg-error-container/20 border-error/20"
       : healthStatus === "warning"
-      ? "bg-amber-100/20 border-amber-500/20"
-      : "bg-secondary-container/20 border-secondary/20";
+        ? "bg-amber-100/20 border-amber-500/20"
+        : "bg-secondary-container/20 border-secondary/20";
 
   return (
     <main className="max-w-[1440px] mx-auto p-12">
@@ -113,12 +107,7 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
             Meeting Insight Panel
           </h1>
           <div className="flex items-center gap-3 pt-1">
-            {role === "gestor" && (
-              <GenerateInsightsButton
-                meetingId={reuniaoId}
-                hasNotes={!!meeting.raw_notes}
-              />
-            )}
+            {/* meet_generate_insights: neste contexto não é necessário gerar insights com IA */}
             {canDelete && (
               <DeleteMeetingButton
                 meetingId={reuniaoId}
@@ -168,10 +157,10 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
                       {participant.archetype === "visionario"
                         ? "O Visionário"
                         : participant.archetype === "cetico"
-                        ? "A Cética"
-                        : participant.archetype === "executor"
-                        ? "O Executor"
-                        : "O Decisor"}{" "}
+                          ? "A Cética"
+                          : participant.archetype === "executor"
+                            ? "O Executor"
+                            : "O Decisor"}{" "}
                       • Drive: {participant.driver ?? "N/A"}
                     </div>
                   </div>
@@ -346,8 +335,8 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
               temperaturaLevel === "high"
                 ? "bg-error-container/10 border-error/10"
                 : temperaturaLevel === "moderate"
-                ? "bg-amber-100/10 border-amber-500/10"
-                : "bg-secondary-container/10 border-secondary/10"
+                  ? "bg-amber-100/10 border-amber-500/10"
+                  : "bg-secondary-container/10 border-secondary/10"
             )}
           >
             <span
@@ -356,15 +345,15 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
                 temperaturaLevel === "high"
                   ? "text-error"
                   : temperaturaLevel === "moderate"
-                  ? "text-amber-500"
-                  : "text-secondary"
+                    ? "text-amber-500"
+                    : "text-secondary"
               )}
             >
               {temperaturaLevel === "high"
                 ? "ALTA"
                 : temperaturaLevel === "moderate"
-                ? "MODERADA"
-                : "BAIXA"}
+                  ? "MODERADA"
+                  : "BAIXA"}
             </span>
             <span
               className={cn(
@@ -372,15 +361,15 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
                 temperaturaLevel === "high"
                   ? "text-error"
                   : temperaturaLevel === "moderate"
-                  ? "text-amber-500"
-                  : "text-secondary"
+                    ? "text-amber-500"
+                    : "text-secondary"
               )}
             >
               {temperaturaLevel === "high"
                 ? "Risco de Ruptura"
                 : temperaturaLevel === "moderate"
-                ? "Atenção Necessária"
-                : "Estável"}
+                  ? "Atenção Necessária"
+                  : "Estável"}
             </span>
           </div>
           <ul className="space-y-3 mt-2">
@@ -392,8 +381,8 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
                     temperaturaLevel === "high"
                       ? "bg-error"
                       : temperaturaLevel === "moderate"
-                      ? "bg-amber-500"
-                      : "bg-secondary"
+                        ? "bg-amber-500"
+                        : "bg-secondary"
                   )}
                 />
                 {signal}
@@ -445,9 +434,9 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
                       <td className="py-4 px-2 text-outline-variant font-mono">
                         {commitment.deadline
                           ? new Date(commitment.deadline).toLocaleDateString("pt-BR", {
-                              day: "2-digit",
-                              month: "short",
-                            })
+                            day: "2-digit",
+                            month: "short",
+                          })
                           : "N/A"}
                       </td>
                       <td className="py-4 px-2 text-right">
@@ -570,15 +559,15 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
                   healthStatus === "critical"
                     ? "bg-error text-on-error"
                     : healthStatus === "warning"
-                    ? "bg-amber-500 text-on-surface"
-                    : "bg-secondary text-on-secondary"
+                      ? "bg-amber-500 text-on-surface"
+                      : "bg-secondary text-on-secondary"
                 )}
               >
                 {healthStatus === "critical"
                   ? "RISCO CRÍTICO"
                   : healthStatus === "warning"
-                  ? "ATENÇÃO"
-                  : "OK"}
+                    ? "ATENÇÃO"
+                    : "OK"}
               </div>
               <h2 className="text-3xl font-headline font-black text-on-surface tracking-tight">
                 Parecer Geral
@@ -599,8 +588,8 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
                   healthStatus === "critical"
                     ? "bg-error"
                     : healthStatus === "warning"
-                    ? "bg-amber-500"
-                    : "bg-secondary"
+                      ? "bg-amber-500"
+                      : "bg-secondary"
                 )}
               />
               <div className="w-12 h-2 rounded-full bg-outline-variant/30" />

@@ -6,13 +6,16 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteProjectAction } from "@/server/actions/delete";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { cn } from "@/lib/utils";
 
 interface DeleteProjectButtonProps {
   projectId: string;
   clienteId: string;
+  /** Sobrescreve estilo do gatilho (ex.: barra de ferramentas em vez de FAB flutuante). */
+  className?: string;
 }
 
-export function DeleteProjectButton({ projectId, clienteId }: DeleteProjectButtonProps) {
+export function DeleteProjectButton({ projectId, clienteId, className }: DeleteProjectButtonProps) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +37,10 @@ export function DeleteProjectButton({ projectId, clienteId }: DeleteProjectButto
     <>
       <Button
         size="icon"
-        className="w-14 h-14 bg-error-container text-error rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        className={cn(
+          "w-14 h-14 bg-error-container text-error rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform",
+          className
+        )}
         onClick={() => setShowConfirm(true)}
       >
         <Trash2 className="w-6 h-6" />

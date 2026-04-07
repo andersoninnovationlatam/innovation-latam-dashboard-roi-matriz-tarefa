@@ -101,7 +101,7 @@ export function ProjectDetailView({
           <ChevronRight className="w-3 h-3" />
           <span className="text-primary font-semibold">{projectName}</span>
         </div>
-        <div className="flex justify-between items-end">
+        <div className="flex flex-col gap-6 md:flex-row md:justify-between md:items-start">
           <div className="max-w-2xl">
             <h1 className="text-4xl font-extrabold text-on-surface tracking-tight mb-3 font-headline">
               {projectName}
@@ -110,7 +110,7 @@ export function ProjectDetailView({
               {projectDescription || t("proj_no_description")}
             </p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col items-end gap-4 shrink-0">
             <div className="flex flex-col items-end">
               <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mb-1">
                 {t("proj_overall_health")}
@@ -129,6 +129,25 @@ export function ProjectDetailView({
                 {projectHealthLabel}
               </div>
             </div>
+            {isGestor && (
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10 rounded-xl border-outline-variant/40 shadow-sm"
+                  title={t("proj_edit")}
+                  aria-label={t("proj_edit")}
+                >
+                  <Edit className="w-5 h-5" />
+                </Button>
+                <DeleteProjectButton
+                  projectId={projetoId}
+                  clienteId={clienteId}
+                  className="!w-10 !h-10 rounded-xl shadow-sm hover:!scale-100 active:!scale-100"
+                />
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -349,17 +368,6 @@ export function ProjectDetailView({
         </div>
       </div>
 
-      {isGestor && (
-        <div className="fixed bottom-8 right-8 flex flex-col gap-4">
-          <DeleteProjectButton projectId={projetoId} clienteId={clienteId} />
-          <Button
-            size="icon"
-            className="w-14 h-14 bg-primary-container text-on-primary-container rounded-full shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-          >
-            <Edit className="w-6 h-6" />
-          </Button>
-        </div>
-      )}
     </main>
   );
 }

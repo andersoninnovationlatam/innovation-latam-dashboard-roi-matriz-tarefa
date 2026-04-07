@@ -16,9 +16,17 @@ const inter = Inter({
   display: "swap",
 });
 
+const faviconUrl =
+  "https://media.licdn.com/dms/image/v2/C4D0BAQGd8spbB1r3iQ/company-logo_200_200/company-logo_200_200/0/1663945501235/innovation_awards_latam_logo?e=1776902400&v=beta&t=0ZXd4Q5V2wI3W6ytnxSDc8EVTg76Ra5eeYUiMxkLs34";
+
 export const metadata: Metadata = {
   title: "Fábrica de Inovação | Innovation Latam",
   description: "Plataforma de gestão de projetos de inovação - Innovation Hub Analytical Atelier",
+  icons: {
+    icon: faviconUrl,
+    shortcut: faviconUrl,
+    apple: faviconUrl,
+  },
 };
 
 export default function RootLayout({

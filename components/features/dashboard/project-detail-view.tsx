@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { NewMeetingButton } from "@/components/features/dashboard/new-meeting-button";
 import { DeleteProjectButton } from "@/components/features/dashboard/delete-project-button";
+import { GenerateProjectStrategicInsightButton } from "@/components/features/dashboard/generate-project-strategic-insight-button";
 import {
   ChevronRight,
   Sparkles,
@@ -34,6 +35,8 @@ interface ProjectDetailViewProps {
   projectHealth: string;
   /** Insight gerado por IA e persistido em `projects.ai_strategic_insight`. */
   strategicInsight: ProjectStrategicInsightPayload | null;
+  /** Pelo menos uma reunião (necessário para gerar insight manual). */
+  hasMeetings: boolean;
   clientName: string | null;
   meetings: ProjectMeetingRow[];
   isGestor: boolean;
@@ -74,6 +77,7 @@ export function ProjectDetailView({
   projectDescription,
   projectHealth,
   strategicInsight,
+  hasMeetings,
   clientName,
   meetings,
   isGestor,
@@ -196,11 +200,19 @@ export function ProjectDetailView({
             </div>
           </div>
 
-          <section className="bg-white/50 dark:bg-surface-container-low/50 backdrop-blur-md rounded-xl p-8 shadow-sm border border-outline-variant/15">
-            <h2 className="text-xl font-headline font-bold mb-6 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-secondary" />
-              {t("proj_ai_insight")}
-            </h2>
+          <section className="bg-white/50 dark:bg-surface-container-low dark:backdrop-blur-none backdrop-blur-md rounded-xl p-8 shadow-sm border border-outline-variant/15 dark:border-outline-variant/25">
+            <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-start sm:justify-between">
+              <h2 className="text-xl font-headline font-bold text-on-surface flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-secondary shrink-0" />
+                {t("proj_ai_insight")}
+              </h2>
+              {isGestor && (
+                <GenerateProjectStrategicInsightButton
+                  projectId={projetoId}
+                  hasMeetings={hasMeetings}
+                />
+              )}
+            </div>
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <p className="text-sm font-body text-on-surface-variant mb-4">

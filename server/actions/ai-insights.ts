@@ -207,10 +207,9 @@ export async function generateInsightsAction(meetingId: string) {
     return { error: upsertError.message };
   }
 
-  try {
-    await regenerateProjectStrategicInsight(meeting.project_id);
-  } catch {
-    /* insight de projeto é best-effort */
+  const projInsight = await regenerateProjectStrategicInsight(meeting.project_id);
+  if (projInsight.error) {
+    console.warn("[generateInsights] insight estratégico do projeto:", projInsight.error);
   }
 
   return { error: null };

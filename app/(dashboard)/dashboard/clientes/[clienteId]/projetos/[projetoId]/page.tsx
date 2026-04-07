@@ -38,6 +38,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       projectDescription={project.description}
       projectHealth={projectHealth}
       strategicInsight={strategicInsight}
+      hasMeetings={meetings.length > 0}
       clientName={client?.name ?? null}
       meetings={meetings.map((m: { id: string; title: string; meeting_date: string; healthStatus: string }) => ({
         id: m.id,

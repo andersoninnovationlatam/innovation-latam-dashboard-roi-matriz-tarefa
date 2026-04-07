@@ -43,10 +43,9 @@ export async function createMeetingAction(data: CreateMeetingInput) {
     return { error: insightErr.message };
   }
 
-  try {
-    await regenerateProjectStrategicInsight(parsed.data.project_id);
-  } catch {
-    /* não bloquear criação da reunião */
+  const insightRes = await regenerateProjectStrategicInsight(parsed.data.project_id);
+  if (insightRes.error) {
+    console.warn("[createMeeting] insight estratégico:", insightRes.error);
   }
 
   return { error: null };

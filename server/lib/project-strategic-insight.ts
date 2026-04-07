@@ -79,14 +79,18 @@ Retorne APENAS um JSON válido (sem markdown), neste formato exato:
 {"body":"2 a 4 frases","tag":"rótulo curto","actions":["ação 1","ação 2"]}`;
 }
 
+export type RegenerateProjectStrategicInsightResult = { error: string | null };
+
 /**
- * Recomputa e persiste o insight estratégico do projeto (OpenRouter).
- * Falhas são engolidas (log) para não quebrar fluxos que a disparam.
+ * Recomputa e persiste o insight estratégico do projeto em `projects.ai_strategic_insight` (OpenRouter).
+ * Chamadas automáticas podem ignorar o retorno; a UI usa `error` para feedback.
  */
-export async function regenerateProjectStrategicInsight(projectId: string): Promise<void> {
+export async function regenerateProjectStrategicInsight(
+  projectId: string
+): Promise<RegenerateProjectStrategicInsightResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    return;
+    return { error: "Chave da API OpenRouter não configurada." };
   }
 
   try {
@@ -99,7 +103,7 @@ export async function regenerateProjectStrategicInsight(projectId: string): Prom
       .single();
 
     if (pErr || !project) {
-      return;
+      return { error: "Projeto não encontrado." };
     }
 
     const { data: meetingRows, error: mErr } = await supabase
@@ -120,8 +124,12 @@ export async function regenerateProjectStrategicInsight(projectId: string): Prom
       .eq("project_id", projectId)
       .order("meeting_date", { ascending: false });
 
-    if (mErr || !meetingRows?.length) {
-      return;
+    if (mErr) {
+      return { error: mErr.message };
+    }
+
+    if (!meetingRows?.length) {
+      return { error: "Não há reuniões neste projeto para gerar o insight." };
     }
 
     const meetings = meetingRows.map((row) => {
@@ -171,8 +179,9 @@ export async function regenerateProjectStrategicInsight(projectId: string): Prom
     });
 
     if (!response.ok) {
-      console.error("[project-strategic-insight] OpenRouter:", await response.text());
-      return;
+      const errText = await response.text();
+      console.error("[project-strategic-insight] OpenRouter:", errText);
+      return { error: `Erro na API OpenRouter: ${response.status}` };
     }
 
     const json = await response.json();
@@ -181,14 +190,12 @@ export async function regenerateProjectStrategicInsight(projectId: string): Prom
     try {
       data = JSON.parse(rawJson);
     } catch {
-      console.error("[project-strategic-insight] Invalid JSON from model");
-      return;
+      return { error: "Resposta da IA não é um JSON válido." };
     }
 
     const parsed = projectStrategicInsightPayloadSchema.safeParse(data);
     if (!parsed.success) {
-      console.error("[project-strategic-insight] Zod:", parsed.error.flatten());
-      return;
+      return { error: `Resposta da IA em formato inesperado: ${parsed.error.errors[0]?.message ?? "inválido"}` };
     }
 
     const payload: ProjectStrategicInsightPayload = parsed.data;
@@ -202,9 +209,12 @@ export async function regenerateProjectStrategicInsight(projectId: string): Prom
       .eq("id", projectId);
 
     if (upErr) {
-      console.error("[project-strategic-insight] DB:", upErr.message);
+      return { error: upErr.message };
     }
+
+    return { error: null };
   } catch (e) {
     console.error("[project-strategic-insight]", e);
+    return { error: e instanceof Error ? e.message : "Falha ao gerar insight." };
   }
 }

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { assertGestor } from "@/server/auth/role";
 import { meetingInsightsSchema } from "@/lib/schemas/meeting-insights";
+import { regenerateProjectStrategicInsight } from "@/server/lib/project-strategic-insight";
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "openai/gpt-4.1-mini";
@@ -127,7 +128,7 @@ export async function generateInsightsAction(meetingId: string) {
   // Fetch the meeting raw_notes
   const { data: meeting, error: meetingError } = await supabase
     .from("meetings")
-    .select("id, title, raw_notes")
+    .select("id, title, raw_notes, project_id")
     .eq("id", meetingId)
     .single();
 
@@ -204,6 +205,12 @@ export async function generateInsightsAction(meetingId: string) {
 
   if (upsertError) {
     return { error: upsertError.message };
+  }
+
+  try {
+    await regenerateProjectStrategicInsight(meeting.project_id);
+  } catch {
+    /* insight de projeto é best-effort */
   }
 
   return { error: null };

@@ -7,6 +7,7 @@ import {
   type CreateMeetingInput,
 } from "@/lib/schemas/meeting-insights";
 import type { MeetingInsights } from "@/lib/types/domain";
+import { regenerateProjectStrategicInsight } from "@/server/lib/project-strategic-insight";
 
 export async function createMeetingAction(data: CreateMeetingInput) {
   const denied = await assertGestor();
@@ -40,6 +41,12 @@ export async function createMeetingAction(data: CreateMeetingInput) {
 
   if (insightErr) {
     return { error: insightErr.message };
+  }
+
+  try {
+    await regenerateProjectStrategicInsight(parsed.data.project_id);
+  } catch {
+    /* não bloquear criação da reunião */
   }
 
   return { error: null };

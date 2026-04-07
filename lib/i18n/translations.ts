@@ -107,6 +107,10 @@ const translations = {
     proj_mock_milestone_name: "Corte de migração do banco",
     proj_ai_insight_body:
       "O delta da migração sugere um ponto de alta fricção na estratégia de integração. O sentimento dos stakeholders mudou desde a entrevista inicial.",
+    proj_ai_insight_empty:
+      "O insight estratégico será gerado automaticamente ao registrar reuniões e ao atualizar insights das reuniões. É necessária chave da API de IA (OpenRouter) no ambiente do servidor.",
+    proj_ai_insight_empty_actions:
+      "Nenhuma ação sugerida até haver um insight gerado.",
     proj_efficiency_tag: "Eficiência otimizável",
     proj_ai_action_1: "Realinhar restrições de arquitetura com o time de API.",
     proj_ai_action_2: "Tratar backlog de segurança do kickoff.",
@@ -338,6 +342,9 @@ const translations = {
     proj_mock_milestone_name: "Database Cutover",
     proj_ai_insight_body:
       "The migration delta suggests a high friction point in the integration strategy. Stakeholder sentiment has shifted since the initial interview.",
+    proj_ai_insight_empty:
+      "Strategic insight is generated automatically when you add meetings and when meeting insights are updated. An OpenRouter API key must be configured on the server.",
+    proj_ai_insight_empty_actions: "No suggested actions until an insight is generated.",
     proj_efficiency_tag: "Efficiency Optimizable",
     proj_ai_action_1: "Re-align architectural constraints with API team.",
     proj_ai_action_2: "Address security backlog from kickoff.",

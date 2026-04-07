@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/language-context";
 import type { TranslationKey } from "@/lib/i18n/translations";
+import type { ProjectStrategicInsightPayload } from "@/lib/schemas/project-strategic-insight";
 
 export type ProjectMeetingRow = {
   id: string;
@@ -31,6 +32,8 @@ interface ProjectDetailViewProps {
   projectName: string;
   projectDescription: string | null;
   projectHealth: string;
+  /** Insight gerado por IA e persistido em `projects.ai_strategic_insight`. */
+  strategicInsight: ProjectStrategicInsightPayload | null;
   clientName: string | null;
   meetings: ProjectMeetingRow[];
   isGestor: boolean;
@@ -70,6 +73,7 @@ export function ProjectDetailView({
   projectName,
   projectDescription,
   projectHealth,
+  strategicInsight,
   clientName,
   meetings,
   isGestor,
@@ -200,27 +204,31 @@ export function ProjectDetailView({
             <div className="grid md:grid-cols-2 gap-8">
               <div>
                 <p className="text-sm font-body text-on-surface-variant mb-4">
-                  {t("proj_ai_insight_body")}
+                  {strategicInsight?.body ?? t("proj_ai_insight_empty")}
                 </p>
-                <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-bold">
-                  <TrendingUp className="w-3 h-3" />
-                  {t("proj_efficiency_tag")}
-                </div>
+                {strategicInsight && (
+                  <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary px-3 py-1 rounded-full text-xs font-bold">
+                    <TrendingUp className="w-3 h-3" />
+                    {strategicInsight.tag}
+                  </div>
+                )}
               </div>
               <div className="bg-surface-container rounded-xl p-4">
                 <div className="text-[10px] text-on-surface-variant uppercase font-bold mb-3">
                   {t("proj_actions")}
                 </div>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-2 text-xs font-medium">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
-                    {t("proj_ai_action_1")}
-                  </li>
-                  <li className="flex items-start gap-2 text-xs font-medium">
-                    <div className="w-2 h-2 rounded-full bg-primary mt-1.5" />
-                    {t("proj_ai_action_2")}
-                  </li>
-                </ul>
+                {strategicInsight ? (
+                  <ul className="space-y-3">
+                    {strategicInsight.actions.map((action, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs font-medium">
+                        <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
+                        {action}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-on-surface-variant">{t("proj_ai_insight_empty_actions")}</p>
+                )}
               </div>
             </div>
           </section>

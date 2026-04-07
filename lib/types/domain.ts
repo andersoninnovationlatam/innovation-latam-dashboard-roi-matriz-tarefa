@@ -21,6 +21,8 @@ export interface Project {
   description: string
   status: ProjectStatus
   created_at: string
+  /** Insight sintetizado por IA (reuniões do projeto). */
+  ai_strategic_insight?: { body: string; tag: string; actions: string[] } | null
 }
 
 export interface Meeting {

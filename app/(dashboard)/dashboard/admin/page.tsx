@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Shield, Users, UserPlus, Settings } from "lucide-react";
+import { InviteUserForm } from "@/components/features/admin/invite-user-form";
+import { EditUserRole } from "@/components/features/admin/edit-user-role";
+import { RemoveUserButton } from "@/components/features/admin/remove-user-button";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -40,7 +43,7 @@ export default async function AdminPage() {
             Admin Panel
           </h2>
           <p className="text-on-surface-variant font-medium mt-1">
-            User management and system administration.
+            Gerenciamento de usuários e administração do sistema.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -48,6 +51,7 @@ export default async function AdminPage() {
             <Shield className="w-4 h-4 text-primary" />
             Gestor Access
           </div>
+          <InviteUserForm />
         </div>
       </header>
 
@@ -59,7 +63,7 @@ export default async function AdminPage() {
               <Users className="h-5 w-5" />
             </div>
           </div>
-          <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">Total Users</p>
+          <p className="text-on-surface-variant text-xs font-bold uppercase tracking-wider mb-1">Total de Usuários</p>
           <h3 className="text-4xl font-extrabold font-headline text-on-surface">{allProfiles.length}</h3>
         </div>
         <div className="bg-surface-container-low p-6 rounded-xl border-b-4 border-secondary/20">
@@ -91,26 +95,27 @@ export default async function AdminPage() {
         <div className="flex justify-between items-center mb-8">
           <h3 className="text-xl font-bold font-headline text-on-surface flex items-center gap-2">
             <Settings className="w-5 h-5 text-on-surface-variant" />
-            User Directory
+            Diretório de Usuários
           </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
               <tr className="text-on-surface-variant/60 text-[10px] uppercase tracking-[0.2em] font-bold">
-                <th className="pb-4 px-2">Name</th>
-                <th className="pb-4 px-2">Role</th>
-                <th className="pb-4 px-2">Member Since</th>
+                <th className="pb-4 px-2">Nome</th>
+                <th className="pb-4 px-2">Papel</th>
+                <th className="pb-4 px-2">Membro desde</th>
+                <th className="pb-4 px-2 text-right">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/10">
-              {allProfiles.map((profile) => (
-                <tr key={profile.id} className="hover:bg-surface-container-low transition-colors">
+              {allProfiles.map((p) => (
+                <tr key={p.id} className="hover:bg-surface-container-low transition-colors">
                   <td className="py-4 px-2">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold text-sm">
-                        {profile.full_name
-                          ? profile.full_name
+                        {p.full_name
+                          ? p.full_name
                               .split(" ")
                               .map((n: string) => n[0])
                               .join("")
@@ -119,29 +124,43 @@ export default async function AdminPage() {
                           : "U"}
                       </div>
                       <span className="font-semibold text-on-surface text-sm">
-                        {profile.full_name || "Unnamed User"}
+                        {p.full_name || "Unnamed User"}
                       </span>
                     </div>
                   </td>
                   <td className="py-4 px-2">
                     <span
                       className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
-                        profile.role === "gestor"
+                        p.role === "gestor"
                           ? "bg-primary/10 text-primary"
-                          : profile.role === "consultor"
+                          : p.role === "consultor"
                           ? "bg-secondary/10 text-secondary"
                           : "bg-surface-container-high text-on-surface-variant"
                       }`}
                     >
-                      {profile.role}
+                      {p.role}
                     </span>
                   </td>
                   <td className="py-4 px-2 text-sm text-on-surface-variant">
-                    {new Date(profile.created_at).toLocaleDateString("pt-BR", {
+                    {new Date(p.created_at).toLocaleDateString("pt-BR", {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
                     })}
+                  </td>
+                  <td className="py-4 px-2">
+                    <div className="flex items-center justify-end gap-1">
+                      <EditUserRole
+                        userId={p.id}
+                        currentRole={p.role as "gestor" | "consultor" | "viewer"}
+                        currentUserId={user.id}
+                      />
+                      <RemoveUserButton
+                        userId={p.id}
+                        userName={p.full_name || "Unnamed User"}
+                        currentUserId={user.id}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}

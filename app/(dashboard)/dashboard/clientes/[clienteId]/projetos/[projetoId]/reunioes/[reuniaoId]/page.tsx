@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getMeetingInsights } from "@/server/actions/meetings";
+import { getUserRole } from "@/server/auth/role";
+import { DeleteMeetingButton } from "@/components/features/dashboard/delete-meeting-button";
+import { GenerateInsightsButton } from "@/components/features/dashboard/generate-insights-button";
 import {
   ChevronRight,
   User,
@@ -31,6 +34,9 @@ interface MeetingInsightPageProps {
 export default async function MeetingInsightPage({ params }: MeetingInsightPageProps) {
   const { clienteId, projetoId, reuniaoId } = await params;
 
+  const role = await getUserRole();
+  const canDelete = role === "gestor" || role === "consultor";
+
   let meetingData;
   try {
     meetingData = await getMeetingInsights(reuniaoId);
@@ -45,11 +51,17 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
   if (!insights) {
     return (
       <main className="max-w-[1440px] mx-auto p-12">
-        <div className="text-center py-12">
+        <div className="text-center py-12 flex flex-col items-center gap-6">
           <p className="text-on-surface-variant">Insights não disponíveis para esta reunião.</p>
+          {role === "gestor" && (
+            <GenerateInsightsButton
+              meetingId={reuniaoId}
+              hasNotes={!!meeting.raw_notes}
+            />
+          )}
           <Link
             href={`/dashboard/clientes/${clienteId}/projetos/${projetoId}`}
-            className="text-primary font-bold text-sm mt-4 inline-block hover:underline"
+            className="text-primary font-bold text-sm hover:underline"
           >
             ← Voltar ao projeto
           </Link>
@@ -96,9 +108,26 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
           <ChevronRight className="w-3 h-3" />
           <span className="text-primary font-medium">{meeting.title}</span>
         </div>
-        <h1 className="text-4xl font-headline font-extrabold text-on-surface tracking-tight">
-          Meeting Insight Panel
-        </h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="text-4xl font-headline font-extrabold text-on-surface tracking-tight">
+            Meeting Insight Panel
+          </h1>
+          <div className="flex items-center gap-3 pt-1">
+            {role === "gestor" && (
+              <GenerateInsightsButton
+                meetingId={reuniaoId}
+                hasNotes={!!meeting.raw_notes}
+              />
+            )}
+            {canDelete && (
+              <DeleteMeetingButton
+                meetingId={reuniaoId}
+                clienteId={clienteId}
+                projetoId={projetoId}
+              />
+            )}
+          </div>
+        </div>
       </div>
 
       {/* 3x3 Grid of AgentCells */}

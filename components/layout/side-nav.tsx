@@ -6,6 +6,7 @@ import { LayoutDashboard, Users, Settings, Plus, HelpCircle, LogOut } from "luci
 import { signOut } from "@/server/actions/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface SideNavProps {
   userRole?: "gestor" | "consultor" | "viewer";
@@ -13,23 +14,24 @@ interface SideNavProps {
 
 export function SideNav({ userRole }: SideNavProps) {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   const navItems = [
     {
       href: "/dashboard",
-      label: "Dashboard",
+      label: t("nav_dashboard"),
       icon: LayoutDashboard,
     },
     {
       href: "/dashboard/clientes",
-      label: "Clients",
+      label: t("nav_clients"),
       icon: Users,
     },
     ...(userRole === "gestor"
       ? [
           {
             href: "/dashboard/admin",
-            label: "Admin",
+            label: t("nav_admin"),
             icon: Settings,
           },
         ]
@@ -80,7 +82,7 @@ export function SideNav({ userRole }: SideNavProps) {
           <div className="mt-8 px-2">
             <Button className="w-full py-3 bg-primary text-on-primary rounded-xl font-semibold shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-95 transition-transform">
               <Plus className="w-5 h-5" />
-              <span>New Project</span>
+              <span>{t("nav_new_project")}</span>
             </Button>
           </div>
         )}
@@ -91,7 +93,7 @@ export function SideNav({ userRole }: SideNavProps) {
           className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out hover:translate-x-1 text-on-surface-variant hover:bg-surface-container-low font-body font-medium text-sm"
         >
           <HelpCircle className="w-5 h-5" />
-          <span>Support</span>
+          <span>{t("nav_support")}</span>
         </Link>
         <form action={signOut}>
           <button
@@ -99,7 +101,7 @@ export function SideNav({ userRole }: SideNavProps) {
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ease-in-out hover:translate-x-1 text-on-surface-variant hover:bg-surface-container-low font-body font-medium text-sm"
           >
             <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            <span>{t("nav_logout")}</span>
           </button>
         </form>
       </div>

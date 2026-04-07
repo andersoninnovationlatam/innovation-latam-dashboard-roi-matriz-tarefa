@@ -2,6 +2,7 @@
 
 import { Search, Bell, HelpCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface TopAppBarProps {
   userEmail?: string;
@@ -9,6 +10,8 @@ interface TopAppBarProps {
 }
 
 export function TopAppBar({ userEmail, userName }: TopAppBarProps) {
+  const { lang, setLang, t } = useLanguage();
+
   return (
     <header className="fixed top-0 w-full z-40 bg-surface-container-lowest/70 backdrop-blur-xl shadow-sm h-16 border-b border-outline-variant/20">
       <div className="flex items-center justify-between px-8 h-full w-full max-w-[1920px] mx-auto pl-72">
@@ -22,7 +25,7 @@ export function TopAppBar({ userEmail, userName }: TopAppBarProps) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-5 h-5" />
             <input
               className="bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-primary/20 transition-all outline-none text-on-surface placeholder:text-outline"
-              placeholder="Search analytics..."
+              placeholder={t("topbar_search_placeholder")}
               type="text"
             />
           </div>
@@ -32,6 +35,14 @@ export function TopAppBar({ userEmail, userName }: TopAppBarProps) {
             </button>
             <button className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors duration-200 active:scale-95">
               <HelpCircle className="w-5 h-5" />
+            </button>
+            {/* Language Toggle */}
+            <button
+              onClick={() => setLang(lang === "pt" ? "en" : "pt")}
+              className="px-2.5 py-1 rounded-full border border-outline-variant/40 text-xs font-bold text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors"
+              title={lang === "pt" ? "Switch to English" : "Mudar para Português"}
+            >
+              {lang === "pt" ? "EN" : "PT"}
             </button>
             <ThemeToggle />
             <div className="h-8 w-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant/30 flex items-center justify-center">

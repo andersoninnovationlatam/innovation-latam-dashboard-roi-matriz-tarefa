@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { HealthBadge } from "./health-badge";
 import { Client, HealthStatus, Meeting } from "@/lib/types/domain";
 import { cn } from "@/lib/utils";
 import { FileText, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/language-context";
 
 interface ClientCardProps {
   client: Client;
@@ -19,11 +22,14 @@ export function ClientCard({
   parecerExcerpt,
   activeProjects = 0,
 }: ClientCardProps) {
+  const { lang, t } = useLanguage();
+  const locale = lang === "pt" ? "pt-BR" : "en-US";
+
   const excerpt = parecerExcerpt
     ? parecerExcerpt.length > 120
       ? parecerExcerpt.substring(0, 120) + "..."
       : parecerExcerpt
-    : "Nenhum parecer disponível";
+    : t("client_card_no_parecer");
 
   const barColors = {
     ok: "bg-secondary",
@@ -32,12 +38,12 @@ export function ClientCard({
   };
 
   const lastMeetingDate = latestMeeting
-    ? new Date(latestMeeting.meeting_date).toLocaleDateString("en-US", {
+    ? new Date(latestMeeting.meeting_date).toLocaleDateString(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
       })
-    : "N/A";
+    : t("client_card_na");
 
   return (
     <Link href={`/dashboard/clientes/${client.id}`}>
@@ -61,9 +67,9 @@ export function ClientCard({
             <HealthBadge status={latestHealth} />
           </div>
           <div className="bg-surface-container-low p-4 rounded-lg">
-            <p className="text-xs font-bold text-on-surface-variant mb-2 flex items-center gap-1">
+            <p className="text-xs font-bold text-on-surface-variant mb-2 flex items-center gap-1 uppercase tracking-wide">
               <FileText className="w-3 h-3" />
-              PARECER GERAL
+              {t("client_card_parecer_title")}
             </p>
             <p className="text-sm text-on-surface leading-relaxed italic">
               "{excerpt}"
@@ -72,7 +78,7 @@ export function ClientCard({
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div className="flex flex-col">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase">
-                Active Projects
+                {t("client_card_active_projects")}
               </span>
               <span className="text-lg font-bold text-on-surface">
                 {activeProjects}
@@ -80,7 +86,7 @@ export function ClientCard({
             </div>
             <div className="flex flex-col items-end">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase">
-                Last Meeting
+                {t("client_card_last_meeting")}
               </span>
               <span className="text-sm font-semibold text-on-surface">
                 {lastMeetingDate}
@@ -90,7 +96,7 @@ export function ClientCard({
         </div>
         <div className="mt-auto p-4 bg-surface-container-high/30 flex justify-between items-center border-t border-outline-variant/10">
           <span className="text-primary text-xs font-bold hover:underline">
-            View Client Profile
+            {t("client_card_view_profile")}
           </span>
           <ChevronRight className="text-on-surface-variant w-5 h-5" />
         </div>

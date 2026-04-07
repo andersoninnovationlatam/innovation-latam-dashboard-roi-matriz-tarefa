@@ -46,7 +46,7 @@ Cada iniciativa dentro de um cliente. Um cliente pode ter múltiplos projetos si
 | `status` | enum | `active` \| `paused` \| `completed` \| `at_risk` |
 | `created_at` | timestamptz | |
 | `updated_at` | timestamptz | Atualizado ao persistir alterações do projeto |
-| `ai_strategic_insight` | jsonb (opcional) | Insight estratégico gerado por IA a partir das reuniões do projeto (`body`, `tag`, `actions[]`). Atualizado automaticamente ao criar reunião e ao gerar insights de reunião. |
+| `ai_strategic_insight` | jsonb (opcional) | Insight estratégico gerado por IA a partir das reuniões do projeto (`body`, `tag`, `actions[]`, `upcoming_actions[]` com `title`/`due_hint` a partir de compromissos e auditor de entregas). Atualizado automaticamente ao criar reunião e ao gerar insights de reunião. |
 
 ### Reunião
 

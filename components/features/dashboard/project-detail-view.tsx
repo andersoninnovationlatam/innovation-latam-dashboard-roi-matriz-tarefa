@@ -330,43 +330,40 @@ export function ProjectDetailView({
             <h2 className="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-6">
               {t("proj_upcoming_actions")}
             </h2>
-            <div className="space-y-6">
-              <div className="flex gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="w-2 h-2 rounded-full bg-error" />
-                  <div className="w-px h-10 bg-outline-variant mt-2" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-on-surface">
-                    {t("proj_action_api_freeze")}
-                  </div>
-                  <div className="text-[10px] text-on-surface-variant mt-1">{t("proj_due_2_days")}</div>
-                </div>
+            {!strategicInsight ? (
+              <p className="text-xs text-on-surface-variant leading-relaxed">
+                {t("proj_upcoming_actions_need_insight")}
+              </p>
+            ) : strategicInsight.upcoming_actions.length === 0 ? (
+              <p className="text-xs text-on-surface-variant leading-relaxed">
+                {t("proj_upcoming_actions_empty")}
+              </p>
+            ) : (
+              <div className="space-y-6">
+                {strategicInsight.upcoming_actions.map((item, idx) => {
+                  const isLast = idx === strategicInsight.upcoming_actions.length - 1;
+                  return (
+                    <div key={`${idx}-${item.title.slice(0, 24)}`} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div
+                          className={cn(
+                            "w-2 h-2 rounded-full",
+                            idx === 0 ? "bg-error" : "bg-outline"
+                          )}
+                        />
+                        {!isLast && <div className="w-px h-10 bg-outline-variant mt-2" />}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-on-surface">{item.title}</div>
+                        {item.due_hint ? (
+                          <div className="text-[10px] text-on-surface-variant mt-1">{item.due_hint}</div>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="flex gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="w-2 h-2 rounded-full bg-outline" />
-                  <div className="w-px h-10 bg-outline-variant mt-2" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-on-surface">
-                    {t("proj_action_compliance")}
-                  </div>
-                  <div className="text-[10px] text-on-surface-variant mt-1">{t("proj_due_5_days")}</div>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex flex-col items-center">
-                  <div className="w-2 h-2 rounded-full bg-outline" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-on-surface">
-                    {t("proj_action_cloud_audit")}
-                  </div>
-                  <div className="text-[10px] text-on-surface-variant mt-1">{t("proj_due_8_days")}</div>
-                </div>
-              </div>
-            </div>
+            )}
             <Button
               variant="outline"
               className="w-full mt-8 py-2 text-xs font-bold text-primary border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors"
@@ -375,7 +372,8 @@ export function ProjectDetailView({
             </Button>
           </div>
 
-          <div className="bg-tertiary-container/10 p-8 rounded-xl border border-tertiary-container/10">
+          {/* Taxa de consumo: oculto até haver dados confiáveis no backend (era cópia fixa). */}
+          {/* <div className="bg-tertiary-container/10 p-8 rounded-xl border border-tertiary-container/10">
             <div className="flex items-center gap-3 mb-4">
               <BarChart3 className="w-5 h-5 text-tertiary" />
               <h2 className="text-sm font-bold text-tertiary">{t("proj_resource_burn")}</h2>
@@ -384,7 +382,7 @@ export function ProjectDetailView({
               {t("proj_optimized")}
             </div>
             <p className="text-[11px] text-on-surface-variant leading-relaxed">{t("proj_resource_burn_body")}</p>
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -14,6 +14,41 @@ function truncate(s: string, max: number): string {
   return `${s.slice(0, max)}\n[…truncado]`;
 }
 
+/** Texto para o modelo priorizar "Próximas ações" (agentes Compromissos + Auditor de Entregas). */
+function formatCompromissosAuditor(compromissos: unknown, auditorEntregas: unknown): string {
+  const lines: string[] = [];
+
+  const comp = compromissos as {
+    commitments?: Array<{
+      what: string;
+      who: string;
+      deadline: string | null;
+      status: string;
+    }>;
+  } | null;
+  if (comp?.commitments?.length) {
+    lines.push("COMPROMISSOS:");
+    for (const c of comp.commitments) {
+      lines.push(
+        `- ${c.what} | quem: ${c.who} | prazo: ${c.deadline ?? "—"} | status: ${c.status}`
+      );
+    }
+  }
+
+  const aud = auditorEntregas as {
+    deliveries?: Array<{ item: string; status: string; evidence?: string }>;
+  } | null;
+  if (aud?.deliveries?.length) {
+    lines.push("AUDITOR DE ENTREGAS:");
+    for (const d of aud.deliveries) {
+      const ev = d.evidence?.trim() ? ` | evidência: ${truncate(d.evidence.trim(), 200)}` : "";
+      lines.push(`- ${d.item} | status: ${d.status}${ev}`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
 function buildContext(params: {
   projectName: string;
   projectDescription: string | null;
@@ -27,6 +62,8 @@ function buildContext(params: {
       estrategista: unknown;
       advogado_diabo: unknown;
     } | null;
+    compromissos: unknown;
+    auditor_entregas: unknown;
   }>;
 }): string {
   const lines: string[] = [
@@ -56,6 +93,10 @@ function buildContext(params: {
         lines.push(`RISCOS (trechos): ${riskTexts.slice(0, 5).join(" | ")}`);
       }
     }
+    const ca = formatCompromissosAuditor(m.compromissos, m.auditor_entregas);
+    if (ca.trim()) {
+      lines.push(ca);
+    }
     lines.push("");
   }
 
@@ -73,10 +114,11 @@ Regras:
 - Não invente fatos ausentes dos dados.
 - Português do Brasil, tom profissional e direto.
 - "tag" deve ser um rótulo curto (2–5 palavras) para o tema central (ex.: risco de escopo, alinhamento técnico).
-- "actions" deve ter 2 a 3 itens concretos e curtos.
+- "actions" deve ter 2 a 3 itens concretos e curtos (visão geral do painel de insight).
+- "upcoming_actions": lista de 2 a 5 itens para a coluna "Próximas ações", derivada APENAS dos blocos COMPROMISSOS e AUDITOR DE ENTREGAS acima. Priorize pendências, prazos próximos e status não concluído. Cada item: "title" (texto curto) e opcionalmente "due_hint" (prazo ou lembrete, só se constar nos dados). Se não houver compromissos nem entregas nos dados, use array vazio [].
 
 Retorne APENAS um JSON válido (sem markdown), neste formato exato:
-{"body":"2 a 4 frases","tag":"rótulo curto","actions":["ação 1","ação 2"]}`;
+{"body":"2 a 4 frases","tag":"rótulo curto","actions":["ação 1","ação 2"],"upcoming_actions":[{"title":"texto","due_hint":"opcional"}]}`;
 }
 
 export type RegenerateProjectStrategicInsightResult = { error: string | null };
@@ -117,7 +159,9 @@ export async function regenerateProjectStrategicInsight(
           parecer_geral,
           health_status,
           estrategista,
-          advogado_diabo
+          advogado_diabo,
+          compromissos,
+          auditor_entregas
         )
       `
       )
@@ -139,6 +183,8 @@ export async function regenerateProjectStrategicInsight(
             health_status: string | null;
             estrategista: unknown;
             advogado_diabo: unknown;
+            compromissos: unknown;
+            auditor_entregas: unknown;
           }
         | null
         | Array<{
@@ -146,13 +192,25 @@ export async function regenerateProjectStrategicInsight(
             health_status: string | null;
             estrategista: unknown;
             advogado_diabo: unknown;
+            compromissos: unknown;
+            auditor_entregas: unknown;
           }>;
-      const insight = Array.isArray(mi) ? mi[0] ?? null : mi;
+      const insightRow = Array.isArray(mi) ? mi[0] ?? null : mi;
+      const insight = insightRow
+        ? {
+            parecer_geral: insightRow.parecer_geral,
+            health_status: insightRow.health_status,
+            estrategista: insightRow.estrategista,
+            advogado_diabo: insightRow.advogado_diabo,
+          }
+        : null;
       return {
         title: row.title,
         meeting_date: row.meeting_date,
         raw_notes: row.raw_notes,
         insight,
+        compromissos: insightRow?.compromissos ?? null,
+        auditor_entregas: insightRow?.auditor_entregas ?? null,
       };
     });
 

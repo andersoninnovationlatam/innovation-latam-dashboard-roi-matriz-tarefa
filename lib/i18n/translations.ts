@@ -125,6 +125,10 @@ const translations = {
     proj_lead_client: "Cliente líder",
     proj_arch_readiness: "Prontidão da arquitetura",
     proj_upcoming_actions: "Próximas ações",
+    proj_upcoming_actions_need_insight:
+      "Gere o insight estratégico para ver próximas ações com base em compromissos e auditor de entregas das reuniões.",
+    proj_upcoming_actions_empty:
+      "Nenhum item pendente em compromissos ou auditor de entregas nos dados analisados. Gere o insight novamente após novas reuniões.",
     proj_action_api_freeze: "Congelamento do API Gateway",
     proj_action_compliance: "Revisão de compliance",
     proj_action_cloud_audit: "Auditoria do provedor cloud",
@@ -362,6 +366,10 @@ const translations = {
     proj_lead_client: "Lead Client",
     proj_arch_readiness: "Architecture Readiness",
     proj_upcoming_actions: "Upcoming Actions",
+    proj_upcoming_actions_need_insight:
+      "Generate the strategic insight to see upcoming actions from meeting commitments and delivery audit data.",
+    proj_upcoming_actions_empty:
+      "No pending items in commitments or delivery audit in the analyzed data. Regenerate the insight after new meetings.",
     proj_action_api_freeze: "API Gateway Freeze",
     proj_action_compliance: "Compliance Review",
     proj_action_cloud_audit: "Cloud Provider Audit",

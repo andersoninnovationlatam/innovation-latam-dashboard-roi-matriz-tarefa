@@ -104,6 +104,8 @@ const translations = {
     proj_meeting_history: "Histórico de Reuniões",
     proj_new_meeting: "Nova Reunião",
     proj_velocity: "Velocidade do Projeto",
+    proj_velocity_empty:
+      "Cadastre reuniões e configure a API OpenRouter no servidor para estimar a velocidade com IA.",
     proj_resources: "Recursos Ativos",
     proj_milestone: "Próximo Marco",
     proj_ai_insight: "Insight Estratégico IA",
@@ -353,6 +355,8 @@ const translations = {
     proj_meeting_history: "Meeting History",
     proj_new_meeting: "New Meeting",
     proj_velocity: "Project Velocity",
+    proj_velocity_empty:
+      "Add meetings and configure the OpenRouter API on the server to estimate velocity with AI.",
     proj_resources: "Resources Active",
     proj_milestone: "Next Milestone",
     proj_ai_insight: "AI Strategic Insight",

@@ -23,7 +23,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const { project, projectHealth } = projectData;
+  const { project, projectHealth, projectVelocity } = projectData;
   const client = (project as { clients?: { name?: string } | null }).clients;
 
   const rawInsight = (project as { ai_strategic_insight?: unknown }).ai_strategic_insight;
@@ -37,6 +37,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       projectName={project.name}
       projectDescription={project.description}
       projectHealth={projectHealth}
+      velocityPercent={projectVelocity?.percent ?? null}
       strategicInsight={strategicInsight}
       hasMeetings={meetings.length > 0}
       clientName={client?.name ?? null}

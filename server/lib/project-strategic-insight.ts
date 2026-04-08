@@ -3,106 +3,11 @@ import {
   projectStrategicInsightPayloadSchema,
   type ProjectStrategicInsightPayload,
 } from "@/lib/schemas/project-strategic-insight";
+import { buildProjectAiContextString, loadMeetingsForProjectAi } from "@/server/lib/project-ai-context";
+import { regenerateProjectVelocity } from "@/server/lib/project-velocity";
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "openai/gpt-4.1-mini";
-
-const MAX_CONTEXT_CHARS = 14_000;
-
-function truncate(s: string, max: number): string {
-  if (s.length <= max) return s;
-  return `${s.slice(0, max)}\n[…truncado]`;
-}
-
-/** Texto para o modelo priorizar "Próximas ações" (agentes Compromissos + Auditor de Entregas). */
-function formatCompromissosAuditor(compromissos: unknown, auditorEntregas: unknown): string {
-  const lines: string[] = [];
-
-  const comp = compromissos as {
-    commitments?: Array<{
-      what: string;
-      who: string;
-      deadline: string | null;
-      status: string;
-    }>;
-  } | null;
-  if (comp?.commitments?.length) {
-    lines.push("COMPROMISSOS:");
-    for (const c of comp.commitments) {
-      lines.push(
-        `- ${c.what} | quem: ${c.who} | prazo: ${c.deadline ?? "—"} | status: ${c.status}`
-      );
-    }
-  }
-
-  const aud = auditorEntregas as {
-    deliveries?: Array<{ item: string; status: string; evidence?: string }>;
-  } | null;
-  if (aud?.deliveries?.length) {
-    lines.push("AUDITOR DE ENTREGAS:");
-    for (const d of aud.deliveries) {
-      const ev = d.evidence?.trim() ? ` | evidência: ${truncate(d.evidence.trim(), 200)}` : "";
-      lines.push(`- ${d.item} | status: ${d.status}${ev}`);
-    }
-  }
-
-  return lines.join("\n");
-}
-
-function buildContext(params: {
-  projectName: string;
-  projectDescription: string | null;
-  meetings: Array<{
-    title: string;
-    meeting_date: string;
-    raw_notes: string | null;
-    insight: {
-      parecer_geral: string | null;
-      health_status: string | null;
-      estrategista: unknown;
-      advogado_diabo: unknown;
-    } | null;
-    compromissos: unknown;
-    auditor_entregas: unknown;
-  }>;
-}): string {
-  const lines: string[] = [
-    `PROJETO: ${params.projectName}`,
-    params.projectDescription ? `DESCRIÇÃO: ${params.projectDescription}` : "",
-    "",
-    "REUNIÕES (mais recentes primeiro):",
-  ].filter(Boolean) as string[];
-
-  for (const m of params.meetings) {
-    lines.push(`--- ${m.meeting_date} · ${m.title} ---`);
-    if (m.raw_notes?.trim()) {
-      lines.push(`NOTAS:\n${truncate(m.raw_notes.trim(), 4000)}`);
-    }
-    if (m.insight) {
-      lines.push(`SAÚDE (insight): ${m.insight.health_status ?? "—"}`);
-      if (m.insight.parecer_geral?.trim()) {
-        lines.push(`PARECER GERAL:\n${truncate(m.insight.parecer_geral.trim(), 2000)}`);
-      }
-      const est = m.insight.estrategista as { executive_summary?: string } | null;
-      if (est?.executive_summary?.trim()) {
-        lines.push(`RESUMO EXECUTIVO:\n${truncate(est.executive_summary.trim(), 1500)}`);
-      }
-      const adv = m.insight.advogado_diabo as { risks?: Array<{ description?: string }> } | null;
-      const riskTexts = adv?.risks?.map((r) => r.description).filter(Boolean) ?? [];
-      if (riskTexts.length) {
-        lines.push(`RISCOS (trechos): ${riskTexts.slice(0, 5).join(" | ")}`);
-      }
-    }
-    const ca = formatCompromissosAuditor(m.compromissos, m.auditor_entregas);
-    if (ca.trim()) {
-      lines.push(ca);
-    }
-    lines.push("");
-  }
-
-  const joined = lines.join("\n");
-  return truncate(joined, MAX_CONTEXT_CHARS);
-}
 
 function buildPrompt(context: string): string {
   return `Você é consultor sênior em projetos de inovação. Com base EXCLUSIVAMENTE nos dados abaixo sobre o projeto e suas reuniões, produza um insight estratégico único: visão do momento do projeto, tensões e próximos passos sugeridos.
@@ -125,7 +30,7 @@ export type RegenerateProjectStrategicInsightResult = { error: string | null };
 
 /**
  * Recomputa e persiste o insight estratégico do projeto em `projects.ai_strategic_insight` (OpenRouter).
- * Chamadas automáticas podem ignorar o retorno; a UI usa `error` para feedback.
+ * Também atualiza `projects.ai_velocity` com o mesmo contexto de reuniões.
  */
 export async function regenerateProjectStrategicInsight(
   projectId: string
@@ -148,76 +53,18 @@ export async function regenerateProjectStrategicInsight(
       return { error: "Projeto não encontrado." };
     }
 
-    const { data: meetingRows, error: mErr } = await supabase
-      .from("meetings")
-      .select(
-        `
-        title,
-        meeting_date,
-        raw_notes,
-        meeting_insights (
-          parecer_geral,
-          health_status,
-          estrategista,
-          advogado_diabo,
-          compromissos,
-          auditor_entregas
-        )
-      `
-      )
-      .eq("project_id", projectId)
-      .order("meeting_date", { ascending: false });
-
-    if (mErr) {
-      return { error: mErr.message };
+    const loaded = await loadMeetingsForProjectAi(supabase, projectId);
+    if (!loaded.ok) {
+      return { error: loaded.error };
     }
-
-    if (!meetingRows?.length) {
+    if (!loaded.meetings.length) {
       return { error: "Não há reuniões neste projeto para gerar o insight." };
     }
 
-    const meetings = meetingRows.map((row) => {
-      const mi = row.meeting_insights as
-        | {
-            parecer_geral: string | null;
-            health_status: string | null;
-            estrategista: unknown;
-            advogado_diabo: unknown;
-            compromissos: unknown;
-            auditor_entregas: unknown;
-          }
-        | null
-        | Array<{
-            parecer_geral: string | null;
-            health_status: string | null;
-            estrategista: unknown;
-            advogado_diabo: unknown;
-            compromissos: unknown;
-            auditor_entregas: unknown;
-          }>;
-      const insightRow = Array.isArray(mi) ? mi[0] ?? null : mi;
-      const insight = insightRow
-        ? {
-            parecer_geral: insightRow.parecer_geral,
-            health_status: insightRow.health_status,
-            estrategista: insightRow.estrategista,
-            advogado_diabo: insightRow.advogado_diabo,
-          }
-        : null;
-      return {
-        title: row.title,
-        meeting_date: row.meeting_date,
-        raw_notes: row.raw_notes,
-        insight,
-        compromissos: insightRow?.compromissos ?? null,
-        auditor_entregas: insightRow?.auditor_entregas ?? null,
-      };
-    });
-
-    const context = buildContext({
+    const context = buildProjectAiContextString({
       projectName: project.name,
       projectDescription: project.description,
-      meetings,
+      meetings: loaded.meetings,
     });
 
     const response = await fetch(OPENROUTER_API_URL, {
@@ -268,6 +115,11 @@ export async function regenerateProjectStrategicInsight(
 
     if (upErr) {
       return { error: upErr.message };
+    }
+
+    const vel = await regenerateProjectVelocity(projectId);
+    if (vel.error) {
+      console.warn("[project-strategic-insight] Velocidade não atualizada:", vel.error);
     }
 
     return { error: null };

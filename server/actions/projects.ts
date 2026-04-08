@@ -7,6 +7,8 @@ import {
   type CreateProjectInput,
 } from "@/lib/schemas/meeting-insights";
 import type { HealthStatus, Meeting } from "@/lib/types/domain";
+import { projectVelocityPayloadSchema, type ProjectVelocityPayload } from "@/lib/schemas/project-velocity";
+import { regenerateProjectVelocity } from "@/server/lib/project-velocity";
 
 export async function createProjectAction(data: CreateProjectInput) {
   const denied = await assertGestor();
@@ -74,7 +76,23 @@ export async function getProjectDetail(projectId: string) {
     };
   }
 
-  return { project, projectHealth, latestMeeting };
+  const velocityParsed = projectVelocityPayloadSchema.safeParse(
+    (project as { ai_velocity?: unknown }).ai_velocity
+  );
+  let projectVelocity: ProjectVelocityPayload | null = velocityParsed.success ? velocityParsed.data : null;
+
+  if (!projectVelocity) {
+    const { count } = await supabase
+      .from("meetings")
+      .select("*", { count: "exact", head: true })
+      .eq("project_id", projectId);
+    if (count && count > 0) {
+      const vel = await regenerateProjectVelocity(projectId);
+      projectVelocity = vel.payload;
+    }
+  }
+
+  return { project, projectHealth, latestMeeting, projectVelocity };
 }
 
 type MeetingRow = {

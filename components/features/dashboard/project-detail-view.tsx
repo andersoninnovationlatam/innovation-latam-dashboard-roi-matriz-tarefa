@@ -33,6 +33,8 @@ interface ProjectDetailViewProps {
   projectName: string;
   projectDescription: string | null;
   projectHealth: string;
+  /** Percentual 0–100 de `projects.ai_velocity` (IA); null se indisponível. */
+  velocityPercent: number | null;
   /** Insight gerado por IA e persistido em `projects.ai_strategic_insight`. */
   strategicInsight: ProjectStrategicInsightPayload | null;
   /** Pelo menos uma reunião (necessário para gerar insight manual). */
@@ -76,6 +78,7 @@ export function ProjectDetailView({
   projectName,
   projectDescription,
   projectHealth,
+  velocityPercent,
   strategicInsight,
   hasMeetings,
   clientName,
@@ -162,16 +165,28 @@ export function ProjectDetailView({
 
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-12 lg:col-span-8 flex flex-col gap-8">
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:max-w-md gap-6">
             <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
               <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
                 {t("proj_velocity")}
               </span>
-              <div className="text-3xl font-headline font-extrabold text-primary">84%</div>
-              <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
-                <div className="h-full bg-primary w-[84%]" />
-              </div>
+              {velocityPercent !== null ? (
+                <>
+                  <div className="text-3xl font-headline font-extrabold text-primary">
+                    {velocityPercent}%
+                  </div>
+                  <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-[width]"
+                      style={{ width: `${velocityPercent}%` }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-on-surface-variant leading-relaxed">{t("proj_velocity_empty")}</p>
+              )}
             </div>
+            {/* Recursos ativos — mock removido até haver fonte de dados no backend.
             <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
               <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
                 {t("proj_resources")}
@@ -189,6 +204,8 @@ export function ProjectDetailView({
                 </div>
               </div>
             </div>
+            */}
+            {/* Próximo marco — mock removido até haver fonte de dados no backend.
             <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
               <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
                 {t("proj_milestone")}
@@ -198,6 +215,7 @@ export function ProjectDetailView({
                 {t("proj_mock_milestone_name")}
               </div>
             </div>
+            */}
           </div>
 
           <section className="bg-white/50 dark:bg-surface-container-low dark:backdrop-blur-none backdrop-blur-md rounded-xl p-8 shadow-sm border border-outline-variant/15 dark:border-outline-variant/25">

@@ -15,6 +15,7 @@ import {
   Edit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatDateOnlyLocal } from "@/lib/date-only";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/language-context";
 import type { TranslationKey } from "@/lib/i18n/translations";
@@ -285,7 +286,7 @@ export function ProjectDetailView({
                       </h3>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-xs font-medium text-on-surface-variant">
-                          {new Date(meeting.meeting_date).toLocaleDateString(locale, {
+                          {formatDateOnlyLocal(meeting.meeting_date, locale, {
                             month: "short",
                             day: "numeric",
                             year: "numeric",

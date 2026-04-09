@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { HealthBadge } from "./health-badge";
 import { Client, HealthStatus, Meeting } from "@/lib/types/domain";
+import { formatDateOnlyLocal } from "@/lib/date-only";
 import { cn } from "@/lib/utils";
 import { FileText, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
@@ -37,7 +38,7 @@ export function ClientCard({
   };
 
   const lastMeetingDate = latestMeeting
-    ? new Date(latestMeeting.meeting_date).toLocaleDateString(locale, {
+    ? formatDateOnlyLocal(latestMeeting.meeting_date, locale, {
         month: "short",
         day: "numeric",
         year: "numeric",

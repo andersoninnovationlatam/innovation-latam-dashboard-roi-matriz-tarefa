@@ -4,6 +4,7 @@ import Link from "next/link";
 import { HealthBadge } from "@/components/features/dashboard/health-badge";
 import { NewProjectButton } from "@/components/features/dashboard/new-project-button";
 import { AlertTriangle, Zap, ArrowRight, AlertCircle } from "lucide-react";
+import { formatDateOnlyLocal } from "@/lib/date-only";
 import { useLanguage } from "@/lib/i18n/language-context";
 import type { HealthStatus, Meeting, ProjectStatus } from "@/lib/types/domain";
 import type { TranslationKey } from "@/lib/i18n/translations";
@@ -261,12 +262,10 @@ export function ClientDetailView({
                 <div className="relative pl-8">
                   <div className="absolute left-0 top-1 w-4 h-4 rounded-full bg-primary border-4 border-surface" />
                   <p className="text-[11px] text-outline font-bold">
-                    {new Date(latestMeeting.meeting_date)
-                      .toLocaleDateString(locale, {
-                        month: "short",
-                        day: "numeric",
-                      })
-                      .toUpperCase()}
+                    {formatDateOnlyLocal(latestMeeting.meeting_date, locale, {
+                      month: "short",
+                      day: "numeric",
+                    }).toUpperCase()}
                   </p>
                   <p className="text-sm text-on-surface">
                     {t("client_detail_latest_meeting_prefix")}{" "}

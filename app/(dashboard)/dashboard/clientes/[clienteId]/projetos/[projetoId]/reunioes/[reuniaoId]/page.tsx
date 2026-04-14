@@ -30,7 +30,9 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
     return <MeetingInsightUnavailable clienteId={clienteId} projetoId={projetoId} />;
   }
 
-  const healthStatus = insights.health_status ?? "ok";
+  // Fallbacks conservadores: "warning" e "moderate" são mais seguros do que
+  // assumir "ok"/"low" quando o campo não veio preenchido pela IA.
+  const healthStatus = insights.health_status ?? "warning";
   const participants = insights.perfilador?.participants ?? [];
   const risks = insights.advogado_diabo?.risks ?? [];
   const deliveries = insights.auditor_entregas?.deliveries ?? [];
@@ -40,7 +42,7 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
   const mainPain = insights.contexto_tecnico?.main_pain ?? "N/A";
   const impactScore = insights.estrategista?.impact_score ?? "N/A";
   const executiveSummary = insights.estrategista?.executive_summary ?? null;
-  const temperaturaLevel = insights.temperatura?.level ?? "low";
+  const temperaturaLevel = insights.temperatura?.level ?? "moderate";
   const temperaturaSignals = insights.temperatura?.signals ?? [];
   const commitments = insights.compromissos?.commitments ?? [];
   const clientPending = insights.validacao_entregas?.client_pending ?? [];

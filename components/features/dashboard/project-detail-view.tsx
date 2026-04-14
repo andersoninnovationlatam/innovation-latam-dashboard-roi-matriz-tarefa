@@ -36,6 +36,14 @@ interface ProjectDetailViewProps {
   projectHealth: string;
   /** Percentual 0–100 de `projects.ai_velocity` (IA); null se indisponível. */
   velocityPercent: number | null;
+  /** Prontidão da arquitetura 0–100, derivada pela IA; null se indisponível. */
+  architectureReadiness: number | null;
+  /** Rótulo da taxa de consumo gerado pela IA. null se indisponível. */
+  burnRateLabel: string | null;
+  /** Estimativa de pessoas ativas mencionadas nas notas. null se não há dados. */
+  activeResources: number | null;
+  /** Estimativa total de pessoas alocadas mencionadas nas notas. null se não há dados. */
+  totalResources: number | null;
   /** Insight gerado por IA e persistido em `projects.ai_strategic_insight`. */
   strategicInsight: ProjectStrategicInsightPayload | null;
   /** Pelo menos uma reunião (necessário para gerar insight manual). */
@@ -80,6 +88,10 @@ export function ProjectDetailView({
   projectDescription,
   projectHealth,
   velocityPercent,
+  architectureReadiness,
+  burnRateLabel,
+  activeResources,
+  totalResources,
   strategicInsight,
   hasMeetings,
   clientName,
@@ -187,36 +199,44 @@ export function ProjectDetailView({
                 <p className="text-sm text-on-surface-variant leading-relaxed">{t("proj_velocity_empty")}</p>
               )}
             </div>
-            {/* Recursos ativos — mock removido até haver fonte de dados no backend.
-            <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
-              <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
-                {t("proj_resources")}
-              </span>
-              <div className="text-3xl font-headline font-extrabold text-secondary">12/15</div>
-              <div className="flex -space-x-2">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="w-6 h-6 rounded-full border-2 border-surface-container-low bg-surface-container-high"
-                  />
-                ))}
-                <div className="w-6 h-6 rounded-full border-2 border-surface-container-low flex items-center justify-center bg-secondary text-[8px] text-on-secondary">
-                  +9
+            {activeResources !== null && (
+              <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
+                <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
+                  {t("proj_resources")}
+                </span>
+                <div className="text-3xl font-headline font-extrabold text-secondary">
+                  {activeResources}/{totalResources ?? "?"}
+                </div>
+                <div className="flex -space-x-2">
+                  {Array.from({ length: Math.min(activeResources, 3) }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-6 h-6 rounded-full border-2 border-surface-container-low bg-surface-container-high"
+                    />
+                  ))}
+                  {activeResources > 3 && (
+                    <div className="w-6 h-6 rounded-full border-2 border-surface-container-low flex items-center justify-center bg-secondary text-[8px] text-on-secondary">
+                      +{activeResources - 3}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-            */}
-            {/* Próximo marco — mock removido até haver fonte de dados no backend.
-            <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
-              <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
-                {t("proj_milestone")}
-              </span>
-              <div className="text-3xl font-headline font-extrabold text-tertiary">14d</div>
-              <div className="text-xs text-on-surface-variant font-medium">
-                {t("proj_mock_milestone_name")}
+            )}
+            {strategicInsight?.upcoming_actions && strategicInsight.upcoming_actions.length > 0 && (
+              <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
+                <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
+                  {t("proj_milestone")}
+                </span>
+                {strategicInsight.upcoming_actions[0].due_hint && (
+                  <div className="text-3xl font-headline font-extrabold text-tertiary">
+                    {strategicInsight.upcoming_actions[0].due_hint}
+                  </div>
+                )}
+                <div className="text-xs text-on-surface-variant font-medium">
+                  {strategicInsight.upcoming_actions[0].title}
+                </div>
               </div>
-            </div>
-            */}
+            )}
           </div>
 
           <section className="bg-white/50 dark:bg-surface-container-low dark:backdrop-blur-none backdrop-blur-md rounded-xl p-8 shadow-sm border border-outline-variant/15 dark:border-outline-variant/25">
@@ -336,10 +356,13 @@ export function ProjectDetailView({
               <div className="mt-6 flex flex-col gap-3">
                 <div className="flex justify-between text-xs font-medium">
                   <span className="text-on-surface-variant">{t("proj_arch_readiness")}</span>
-                  <span>65%</span>
+                  <span>{architectureReadiness !== null ? `${architectureReadiness}%` : "—"}</span>
                 </div>
                 <div className="h-1 bg-surface-container-highest rounded-full">
-                  <div className="h-full bg-secondary w-[65%]" />
+                  <div
+                    className="h-full bg-secondary rounded-full transition-[width]"
+                    style={{ width: architectureReadiness !== null ? `${architectureReadiness}%` : "0%" }}
+                  />
                 </div>
               </div>
             </div>
@@ -391,17 +414,17 @@ export function ProjectDetailView({
             </Button>
           </div>
 
-          {/* Taxa de consumo: oculto até haver dados confiáveis no backend (era cópia fixa). */}
-          {/* <div className="bg-tertiary-container/10 p-8 rounded-xl border border-tertiary-container/10">
-            <div className="flex items-center gap-3 mb-4">
-              <BarChart3 className="w-5 h-5 text-tertiary" />
-              <h2 className="text-sm font-bold text-tertiary">{t("proj_resource_burn")}</h2>
+          {burnRateLabel !== null && (
+            <div className="bg-tertiary-container/10 p-8 rounded-xl border border-tertiary-container/10">
+              <div className="flex items-center gap-3 mb-4">
+                <BarChart3 className="w-5 h-5 text-tertiary" />
+                <h2 className="text-sm font-bold text-tertiary">{t("proj_resource_burn")}</h2>
+              </div>
+              <div className="text-2xl font-headline font-bold text-on-background mb-1">
+                {burnRateLabel}
+              </div>
             </div>
-            <div className="text-2xl font-headline font-bold text-on-background mb-1">
-              {t("proj_optimized")}
-            </div>
-            <p className="text-[11px] text-on-surface-variant leading-relaxed">{t("proj_resource_burn_body")}</p>
-          </div> */}
+          )}
         </div>
       </div>
 

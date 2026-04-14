@@ -31,15 +31,18 @@ export async function signUp(
   fullName?: string
 ) {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: fullName
-      ? { data: { full_name: fullName } }
-      : undefined,
+    options: {
+      data: fullName ? { full_name: fullName } : undefined,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/api/auth/callback`,
+    },
   });
-  if (error) return { error: translateAuthError(error.message) };
-  return { error: null };
+  if (error) return { error: translateAuthError(error.message), requiresConfirmation: false };
+  // Se o usuário foi criado mas sem sessão ativa, significa que precisa confirmar e-mail
+  const requiresConfirmation = !!data.user && !data.session;
+  return { error: null, requiresConfirmation };
 }
 
 export async function signOut() {

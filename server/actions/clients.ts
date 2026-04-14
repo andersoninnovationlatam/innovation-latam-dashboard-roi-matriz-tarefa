@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { assertGestor } from "@/server/auth/role";
 import { createClientSchema, type CreateClientInput } from "@/lib/schemas/meeting-insights";
+import { projectVelocityPayloadSchema } from "@/lib/schemas/project-velocity";
 import type {
   Client,
   ClientCurrentHealth,
@@ -157,7 +158,7 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
 
   const { data: projects } = await supabase
     .from("projects")
-    .select("id, name, description, status")
+    .select("id, name, description, status, ai_velocity")
     .eq("client_id", clientId);
 
   const { data: pchAll } = await supabase
@@ -170,8 +171,10 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
   const projectsWithHealth = (projects ?? []).map((p) => {
     const pch = pchList.find((x) => x.project_id === p.id);
     const healthStatus = (pch?.health_status ?? "ok") as HealthStatus;
-    const completion =
-      healthStatus === "ok" ? 92 : healthStatus === "warning" ? 68 : 40;
+    const parsedVelocity = projectVelocityPayloadSchema.safeParse(p.ai_velocity);
+    const completion = parsedVelocity.success
+      ? parsedVelocity.data.percent
+      : healthStatus === "ok" ? 92 : healthStatus === "warning" ? 68 : 40;
     return {
       id: p.id,
       name: p.name,
@@ -184,8 +187,16 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
 
   const clientHealth = (cch?.health_status ??
     ("ok" as HealthStatus)) as HealthStatus;
+
+  const velocities: number[] = [];
+  for (const p of (projects ?? [])) {
+    const parsed = projectVelocityPayloadSchema.safeParse(p.ai_velocity);
+    if (parsed.success) velocities.push(parsed.data.percent);
+  }
   const healthIndex =
-    clientHealth === "critical" ? 35 : clientHealth === "warning" ? 62 : 88;
+    velocities.length > 0
+      ? Math.round(velocities.reduce((a, b) => a + b, 0) / velocities.length)
+      : clientHealth === "critical" ? 35 : clientHealth === "warning" ? 62 : 88;
 
   const best = pickLatestProjectForClient(pchList, clientId);
   let latestMeeting: Meeting | null = null;

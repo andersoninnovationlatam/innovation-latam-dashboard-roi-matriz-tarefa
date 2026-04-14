@@ -30,6 +30,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const parsedInsight = projectStrategicInsightPayloadSchema.safeParse(rawInsight);
   const strategicInsight = parsedInsight.success ? parsedInsight.data : null;
 
+  const architectureReadiness = projectVelocity?.architecture_readiness ?? null;
+  const burnRateLabel = projectVelocity?.burn_rate_label ?? null;
+  const activeResources = projectVelocity?.active_resources ?? null;
+  const totalResources = projectVelocity?.total_resources ?? null;
+
   return (
     <ProjectDetailView
       clienteId={clienteId}
@@ -38,6 +43,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       projectDescription={project.description}
       projectHealth={projectHealth}
       velocityPercent={projectVelocity?.percent ?? null}
+      architectureReadiness={architectureReadiness}
+      burnRateLabel={burnRateLabel}
+      activeResources={activeResources}
+      totalResources={totalResources}
       strategicInsight={strategicInsight}
       hasMeetings={meetings.length > 0}
       clientName={client?.name ?? null}

@@ -10,19 +10,37 @@ const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "openai/gpt-4.1-mini";
 
 function buildVelocityPrompt(context: string): string {
-  return `Você é consultor sênior em projetos de inovação. Com base EXCLUSIVAMENTE nos dados abaixo, estime a "velocidade do projeto" como um único número inteiro de 0 a 100.
-
-Interpretação (use evidências dos dados; não invente fatos ausentes):
-- 90–100: ritmo forte, entregas/compromissos majoritariamente em dia, saúde ok, poucos bloqueios.
-- 60–89: avanço moderado, alguns atrasos ou riscos gerenciáveis.
-- 30–59: desaceleração clara, várias pendências, saúde warning ou bloqueios recorrentes.
-- 0–29: risco alto, paralisação, critical, ou dados indicam forte impedimento ao ritmo.
+  return `Você é consultor sênior em projetos de inovação. Com base EXCLUSIVAMENTE nos dados abaixo, avalie 5 dimensões do projeto e retorne um JSON com exatamente os campos especificados. Não invente fatos ausentes — se não houver evidência, use null.
 
 DADOS:
 ${context}
 
+Campos a retornar:
+
+1. percent (inteiro 0–100): velocidade geral do projeto.
+   - 90–100: ritmo forte, entregas/compromissos em dia, saúde ok, poucos bloqueios.
+   - 60–89: avanço moderado, alguns atrasos ou riscos gerenciáveis.
+   - 30–59: desaceleração clara, várias pendências, saúde warning ou bloqueios recorrentes.
+   - 0–29: risco alto, paralisação, critical ou forte impedimento ao ritmo.
+
+2. architecture_readiness (inteiro 0–100): maturidade técnica/arquitetural.
+   - 80–100: stack clara, sem débito técnico crítico, integrações estáveis.
+   - 50–79: preocupações técnicas gerenciáveis, débitos não críticos.
+   - 0–49: bloqueios técnicos graves, débito alto, integrações instáveis.
+   Se não houver menção de aspectos técnicos nas notas, use 50 como valor neutro.
+
+3. burn_rate_label (string): ritmo de consumo de recursos vs. entregas.
+   Valores possíveis: "Otimizada" | "Moderada" | "Elevada"
+   - "Otimizada": entregas em dia, poucos bloqueios, equipe eficiente.
+   - "Moderada": entregas com atrasos pontuais ou alguns bloqueios gerenciáveis.
+   - "Elevada": atrasos recorrentes, muitas pendências, equipe sobrecarregada.
+
+4. active_resources (inteiro ou null): estimativa de pessoas ativamente engajadas mencionadas nas notas (ex: participantes de reuniões, nomes citados). Retorne null se não houver dados suficientes.
+
+5. total_resources (inteiro ou null): estimativa total de pessoas alocadas ao projeto mencionadas nas notas. Retorne null se não houver dados suficientes. Se active_resources for null, este também deve ser null.
+
 Retorne APENAS um JSON válido (sem markdown), neste formato exato:
-{"percent": <inteiro de 0 a 100>}`;
+{"percent": <inteiro>, "architecture_readiness": <inteiro>, "burn_rate_label": "<string>", "active_resources": <inteiro ou null>, "total_resources": <inteiro ou null>}`;
 }
 
 export type RegenerateProjectVelocityResult = {
@@ -110,6 +128,10 @@ export async function regenerateProjectVelocity(
     const generatedAt = new Date().toISOString();
     const payload: ProjectVelocityPayload = {
       percent: parsedAi.data.percent,
+      architecture_readiness: parsedAi.data.architecture_readiness ?? null,
+      burn_rate_label: parsedAi.data.burn_rate_label ?? null,
+      active_resources: parsedAi.data.active_resources ?? null,
+      total_resources: parsedAi.data.total_resources ?? null,
       generated_at: generatedAt,
     };
 

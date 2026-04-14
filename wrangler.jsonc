@@ -13,11 +13,16 @@
   },
   "services": [
     {
+      // Self-reference necessário para o middleware externo do OpenNext
+      // O nome do serviço deve ser idêntico ao campo "name" acima
       "binding": "WORKER_SELF_REFERENCE",
       "service": "innovation-latam-dashboard-roi-matriz-tarefa"
     }
   ],
-  "images": {
-    "binding": "IMAGES"
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
   }
 }

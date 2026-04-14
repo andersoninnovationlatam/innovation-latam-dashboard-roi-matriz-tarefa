@@ -1,50 +1,65 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { UserPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { inviteUserAction } from "@/server/actions/admin";
 import { useLanguage } from "@/lib/i18n/language-context";
-import type { UserRole } from "@/lib/types/domain";
+
+const inviteFormSchema = z.object({
+  full_name: z.string().optional(),
+  email: z.string().email("E-mail inválido"),
+  role: z.enum(["gestor", "consultor", "viewer"]),
+});
+
+type InviteFormInput = z.infer<typeof inviteFormSchema>;
 
 export function InviteUserForm() {
   const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const router = useRouter();
   const { t } = useLanguage();
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<InviteFormInput>({
+    resolver: zodResolver(inviteFormSchema),
+    defaultValues: { role: "viewer" },
+  });
+
+  function handleClose() {
+    setOpen(false);
+    setServerError(null);
     setSuccess(false);
-    const form = e.currentTarget;
-    const formData = new FormData(form);
+    reset();
+  }
 
-    startTransition(async () => {
-      const result = await inviteUserAction({
-        email: formData.get("email") as string,
-        role: formData.get("role") as UserRole,
-        full_name: formData.get("full_name") as string,
-      });
+  async function onSubmit(data: InviteFormInput) {
+    setServerError(null);
+    setSuccess(false);
 
-      if (result?.error) {
-        setError(result.error);
-        return;
-      }
+    const result = await inviteUserAction(data);
+    if (result?.error) {
+      setServerError(result.error);
+      return;
+    }
 
-      setSuccess(true);
-      form.reset();
-      setTimeout(() => {
-        setOpen(false);
-        setSuccess(false);
-        router.refresh();
-      }, 1500);
-    });
+    setSuccess(true);
+    reset();
+    setTimeout(() => {
+      handleClose();
+      router.refresh();
+    }, 1500);
   }
 
   return (
@@ -61,31 +76,45 @@ export function InviteUserForm() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-surface rounded-2xl shadow-xl p-8 max-w-md w-full flex flex-col gap-6 border border-outline-variant/20">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-headline font-bold text-on-surface">{t("admin_invite_title")}</h2>
+              <h2 className="text-xl font-headline font-bold text-on-surface">
+                {t("admin_invite_title")}
+              </h2>
               <button
-                onClick={() => { setOpen(false); setError(null); }}
+                onClick={handleClose}
                 className="text-on-surface-variant hover:text-on-surface transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="full_name">{t("admin_invite_name")}</Label>
-                <Input id="full_name" name="full_name" placeholder={t("admin_invite_name")} />
+                <Input
+                  id="full_name"
+                  placeholder={t("admin_invite_name")}
+                  {...register("full_name")}
+                />
               </div>
+
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="email">{t("admin_invite_email")}</Label>
-                <Input id="email" name="email" type="email" required placeholder="usuario@empresa.com" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="usuario@empresa.com"
+                  {...register("email")}
+                />
+                {errors.email && (
+                  <p className="text-error text-[11px] font-medium">{errors.email.message}</p>
+                )}
               </div>
+
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="role">{t("admin_invite_role")}</Label>
                 <select
                   id="role"
-                  name="role"
-                  required
-                  defaultValue="viewer"
+                  {...register("role")}
                   className="w-full border border-outline-variant/40 rounded-lg px-3 py-2 bg-surface text-on-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
                   <option value="viewer">Viewer</option>
@@ -94,7 +123,9 @@ export function InviteUserForm() {
                 </select>
               </div>
 
-              {error && <p className="text-sm text-error font-medium">{error}</p>}
+              {serverError && (
+                <p className="text-sm text-error font-medium">{serverError}</p>
+              )}
               {success && (
                 <p className="text-sm text-secondary font-medium">{t("admin_invite_success")}</p>
               )}
@@ -104,17 +135,17 @@ export function InviteUserForm() {
                   type="button"
                   variant="outline"
                   className="flex-1"
-                  onClick={() => { setOpen(false); setError(null); }}
-                  disabled={isPending}
+                  onClick={handleClose}
+                  disabled={isSubmitting}
                 >
                   {t("btn_cancel")}
                 </Button>
                 <Button
                   type="submit"
                   className="flex-1 bg-primary text-on-primary hover:bg-primary/90"
-                  disabled={isPending}
+                  disabled={isSubmitting}
                 >
-                  {isPending ? t("btn_sending") : t("admin_invite_send")}
+                  {isSubmitting ? t("btn_sending") : t("admin_invite_send")}
                 </Button>
               </div>
             </form>

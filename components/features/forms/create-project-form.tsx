@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createProjectSchema, type CreateProjectInput } from "@/lib/schemas/meeting-insights";
 import { createProjectAction } from "@/server/actions/projects";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { X, FolderKanban, ArrowRight } from "lucide-react";
 
 interface CreateProjectFormProps {
@@ -65,24 +67,17 @@ export function CreateProjectForm({ clientId, onClose }: CreateProjectFormProps)
           <input type="hidden" {...register("client_id")} />
 
           <div className="space-y-2">
-            <label className="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-              Nome do Projeto
-            </label>
-            <input
-              className="block w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all"
-              placeholder="Nome do projeto"
-              {...register("name")}
-            />
+            <Label htmlFor="name">Nome do Projeto</Label>
+            <Input id="name" placeholder="Nome do projeto" {...register("name")} />
             {errors.name && (
               <p className="text-error text-[11px] font-medium">{errors.name.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-              Descrição
-            </label>
+            <Label htmlFor="description">Descrição</Label>
             <textarea
+              id="description"
               className="block w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all resize-none"
               placeholder="Breve descrição do projeto"
               rows={3}
@@ -91,10 +86,9 @@ export function CreateProjectForm({ clientId, onClose }: CreateProjectFormProps)
           </div>
 
           <div className="space-y-2">
-            <label className="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-              Status
-            </label>
+            <Label htmlFor="status">Status</Label>
             <select
+              id="status"
               className="block w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 transition-all"
               {...register("status")}
             >

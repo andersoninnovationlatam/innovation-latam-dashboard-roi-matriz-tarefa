@@ -7,7 +7,6 @@ import {
   type CreateMeetingInput,
 } from "@/lib/schemas/meeting-insights";
 import type { MeetingInsights } from "@/lib/types/domain";
-import { regenerateProjectStrategicInsight } from "@/server/lib/project-strategic-insight";
 
 export async function createMeetingAction(data: CreateMeetingInput) {
   const denied = await assertGestor();
@@ -41,11 +40,6 @@ export async function createMeetingAction(data: CreateMeetingInput) {
 
   if (insightErr) {
     return { error: insightErr.message };
-  }
-
-  const insightRes = await regenerateProjectStrategicInsight(parsed.data.project_id);
-  if (insightRes.error) {
-    console.warn("[createMeeting] insight estratégico:", insightRes.error);
   }
 
   return { error: null };

@@ -4,9 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { assertGestor } from "@/server/auth/role";
 import { meetingInsightsSchema } from "@/lib/schemas/meeting-insights";
 import { regenerateProjectStrategicInsight } from "@/server/lib/project-strategic-insight";
-
-const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "openai/gpt-4.1-mini";
+import { callOpenRouter, parseOpenRouterJson } from "@/server/lib/openrouter";
 
 function buildPrompt(rawNotes: string): string {
   return `Você é um sistema de análise de reuniões de consultoria. Analise as notas abaixo e retorne um JSON com exatamente a estrutura especificada.
@@ -118,14 +116,8 @@ export async function generateInsightsAction(meetingId: string) {
   const denied = await assertGestor();
   if (denied) return denied;
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return { error: "Chave da API OpenRouter não configurada." };
-  }
-
   const supabase = await createClient();
 
-  // Fetch the meeting raw_notes
   const { data: meeting, error: meetingError } = await supabase
     .from("meetings")
     .select("id, title, raw_notes, project_id")
@@ -136,56 +128,27 @@ export async function generateInsightsAction(meetingId: string) {
     return { error: "Reunião não encontrada." };
   }
 
-  if (!meeting.raw_notes || meeting.raw_notes.trim().length === 0) {
+  if (!meeting.raw_notes?.trim()) {
     return { error: "Esta reunião não possui notas para analisar. Adicione notas antes de gerar insights." };
   }
 
-  // Call OpenRouter
-  let rawJson: string;
-  try {
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://innovationlatam.com",
-        "X-Title": "Innovation Latam Dashboard",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: "user", content: buildPrompt(meeting.raw_notes) }],
-        response_format: { type: "json_object" },
-        temperature: 0.3,
-      }),
-    });
+  const aiResult = await callOpenRouter({
+    messages: [{ role: "user", content: buildPrompt(meeting.raw_notes) }],
+    temperature: 0.3,
+  });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      return { error: `Erro na API OpenRouter: ${response.status} — ${errText}` };
-    }
+  if (!aiResult.ok) return { error: aiResult.error };
 
-    const json = await response.json();
-    rawJson = json?.choices?.[0]?.message?.content ?? "";
-  } catch (err) {
-    return { error: `Falha ao conectar com OpenRouter: ${String(err)}` };
-  }
+  const jsonResult = parseOpenRouterJson<unknown>(aiResult.content);
+  if (!jsonResult.ok) return { error: jsonResult.error };
 
-  // Parse and validate with Zod
-  let parsed: ReturnType<typeof meetingInsightsSchema.safeParse>;
-  try {
-    const data = JSON.parse(rawJson);
-    parsed = meetingInsightsSchema.safeParse(data);
-  } catch {
-    return { error: "Resposta da IA não é um JSON válido." };
-  }
-
+  const parsed = meetingInsightsSchema.safeParse(jsonResult.data);
   if (!parsed.success) {
     return { error: `Resposta da IA em formato inesperado: ${parsed.error.errors[0]?.message}` };
   }
 
   const insights = parsed.data;
 
-  // Upsert into meeting_insights
   const { error: upsertError } = await supabase
     .from("meeting_insights")
     .update({

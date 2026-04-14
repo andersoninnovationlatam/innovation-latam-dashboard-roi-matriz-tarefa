@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createMeetingSchema, type CreateMeetingInput } from "@/lib/schemas/meeting-insights";
 import { createMeetingAction } from "@/server/actions/meetings";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { X, Calendar, ArrowRight } from "lucide-react";
 
 interface CreateMeetingFormProps {
@@ -68,38 +70,25 @@ export function CreateMeetingForm({ projectId, onClose }: CreateMeetingFormProps
           <input type="hidden" {...register("project_id")} />
 
           <div className="space-y-2">
-            <label className="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-              Título
-            </label>
-            <input
-              className="block w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all"
-              placeholder="Ex: Kickoff Meeting"
-              {...register("title")}
-            />
+            <Label htmlFor="title">Título</Label>
+            <Input id="title" placeholder="Ex: Kickoff Meeting" {...register("title")} />
             {errors.title && (
               <p className="text-error text-[11px] font-medium">{errors.title.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-              Data da Reunião
-            </label>
-            <input
-              type="date"
-              className="block w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 transition-all"
-              {...register("meeting_date")}
-            />
+            <Label htmlFor="meeting_date">Data da Reunião</Label>
+            <Input id="meeting_date" type="date" {...register("meeting_date")} />
             {errors.meeting_date && (
               <p className="text-error text-[11px] font-medium">{errors.meeting_date.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="block font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-              Notas (opcional)
-            </label>
+            <Label htmlFor="raw_notes">Notas (opcional)</Label>
             <textarea
+              id="raw_notes"
               className="block w-full px-4 py-3 bg-surface-container-highest border-none rounded-xl text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all resize-none"
               placeholder="Anotações da reunião..."
               rows={4}

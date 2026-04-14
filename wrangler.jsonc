@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
-  "name": "fullstack-starter",
+  "name": "innovation-latam-dashboard-roi-matriz-tarefa",
   "compatibility_date": "2024-12-30",
   "compatibility_flags": [
     "nodejs_compat",
@@ -14,7 +14,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "fullstack-starter"
+      "service": "innovation-latam-dashboard-roi-matriz-tarefa"
     }
   ],
   "images": {

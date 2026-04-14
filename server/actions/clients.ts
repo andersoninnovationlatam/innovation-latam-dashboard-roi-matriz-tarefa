@@ -168,13 +168,15 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
 
   const pchList = (pchAll ?? []) as ProjectCurrentHealth[];
 
+  const velocities: number[] = [];
+
   const projectsWithHealth = (projects ?? []).map((p) => {
     const pch = pchList.find((x) => x.project_id === p.id);
     const healthStatus = (pch?.health_status ?? "ok") as HealthStatus;
     const parsedVelocity = projectVelocityPayloadSchema.safeParse(p.ai_velocity);
-    const completion = parsedVelocity.success
-      ? parsedVelocity.data.percent
-      : healthStatus === "ok" ? 92 : healthStatus === "warning" ? 68 : 40;
+    const velocityPercent = parsedVelocity.success ? parsedVelocity.data.percent : null;
+    if (velocityPercent !== null) velocities.push(velocityPercent);
+    const completion = velocityPercent ?? (healthStatus === "ok" ? 92 : healthStatus === "warning" ? 68 : 40);
     return {
       id: p.id,
       name: p.name,
@@ -185,14 +187,8 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
     };
   });
 
-  const clientHealth = (cch?.health_status ??
-    ("ok" as HealthStatus)) as HealthStatus;
+  const clientHealth = (cch?.health_status ?? ("ok" as HealthStatus)) as HealthStatus;
 
-  const velocities: number[] = [];
-  for (const p of (projects ?? [])) {
-    const parsed = projectVelocityPayloadSchema.safeParse(p.ai_velocity);
-    if (parsed.success) velocities.push(parsed.data.percent);
-  }
   const healthIndex =
     velocities.length > 0
       ? Math.round(velocities.reduce((a, b) => a + b, 0) / velocities.length)

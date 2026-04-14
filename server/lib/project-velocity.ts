@@ -5,9 +5,7 @@ import {
   type ProjectVelocityPayload,
 } from "@/lib/schemas/project-velocity";
 import { buildProjectAiContextString, loadMeetingsForProjectAi } from "@/server/lib/project-ai-context";
-
-const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "openai/gpt-4.1-mini";
+import { callOpenRouter, parseOpenRouterJson } from "@/server/lib/openrouter";
 
 function buildVelocityPrompt(context: string): string {
   return `Você é consultor sênior em projetos de inovação. Com base EXCLUSIVAMENTE nos dados abaixo, avalie 5 dimensões do projeto e retorne um JSON com exatamente os campos especificados. Não invente fatos ausentes — se não houver evidência, use null.
@@ -54,11 +52,6 @@ export type RegenerateProjectVelocityResult = {
 export async function regenerateProjectVelocity(
   projectId: string
 ): Promise<RegenerateProjectVelocityResult> {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return { error: "Chave da API OpenRouter não configurada.", payload: null };
-  }
-
   try {
     const supabase = await createClient();
 
@@ -86,38 +79,20 @@ export async function regenerateProjectVelocity(
       meetings: loaded.meetings,
     });
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://innovationlatam.com",
-        "X-Title": "Innovation Latam Dashboard",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: "user", content: buildVelocityPrompt(context) }],
-        response_format: { type: "json_object" },
-        temperature: 0.25,
-      }),
+    const aiResult = await callOpenRouter({
+      messages: [{ role: "user", content: buildVelocityPrompt(context) }],
+      temperature: 0.25,
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("[project-velocity] OpenRouter:", errText);
-      return { error: `Erro na API OpenRouter: ${response.status}`, payload: null };
+    if (!aiResult.ok) {
+      console.error("[project-velocity] OpenRouter:", aiResult.error);
+      return { error: aiResult.error, payload: null };
     }
 
-    const json = await response.json();
-    const rawJson = json?.choices?.[0]?.message?.content ?? "";
-    let data: unknown;
-    try {
-      data = JSON.parse(rawJson);
-    } catch {
-      return { error: "Resposta da IA não é um JSON válido.", payload: null };
-    }
+    const jsonResult = parseOpenRouterJson<unknown>(aiResult.content);
+    if (!jsonResult.ok) return { error: jsonResult.error, payload: null };
 
-    const parsedAi = projectVelocityAiResponseSchema.safeParse(data);
+    const parsedAi = projectVelocityAiResponseSchema.safeParse(jsonResult.data);
     if (!parsedAi.success) {
       return {
         error: `Resposta da IA em formato inesperado: ${parsedAi.error.errors[0]?.message ?? "inválido"}`,
@@ -142,10 +117,7 @@ export async function regenerateProjectVelocity(
 
     const { error: upErr } = await supabase
       .from("projects")
-      .update({
-        ai_velocity: validated.data,
-        updated_at: generatedAt,
-      })
+      .update({ ai_velocity: validated.data, updated_at: generatedAt })
       .eq("id", projectId);
 
     if (upErr) {

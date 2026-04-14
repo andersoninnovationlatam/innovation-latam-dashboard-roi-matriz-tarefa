@@ -5,9 +5,7 @@ import {
 } from "@/lib/schemas/project-strategic-insight";
 import { buildProjectAiContextString, loadMeetingsForProjectAi } from "@/server/lib/project-ai-context";
 import { regenerateProjectVelocity } from "@/server/lib/project-velocity";
-
-const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "openai/gpt-4.1-mini";
+import { callOpenRouter, parseOpenRouterJson } from "@/server/lib/openrouter";
 
 function buildPrompt(context: string): string {
   return `Você é consultor sênior em projetos de inovação. Com base EXCLUSIVAMENTE nos dados abaixo sobre o projeto e suas reuniões, produza um insight estratégico único: visão do momento do projeto, tensões e próximos passos sugeridos.
@@ -35,11 +33,6 @@ export type RegenerateProjectStrategicInsightResult = { error: string | null };
 export async function regenerateProjectStrategicInsight(
   projectId: string
 ): Promise<RegenerateProjectStrategicInsightResult> {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return { error: "Chave da API OpenRouter não configurada." };
-  }
-
   try {
     const supabase = await createClient();
 
@@ -67,38 +60,20 @@ export async function regenerateProjectStrategicInsight(
       meetings: loaded.meetings,
     });
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://innovationlatam.com",
-        "X-Title": "Innovation Latam Dashboard",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: "user", content: buildPrompt(context) }],
-        response_format: { type: "json_object" },
-        temperature: 0.35,
-      }),
+    const aiResult = await callOpenRouter({
+      messages: [{ role: "user", content: buildPrompt(context) }],
+      temperature: 0.35,
     });
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.error("[project-strategic-insight] OpenRouter:", errText);
-      return { error: `Erro na API OpenRouter: ${response.status}` };
+    if (!aiResult.ok) {
+      console.error("[project-strategic-insight] OpenRouter:", aiResult.error);
+      return { error: aiResult.error };
     }
 
-    const json = await response.json();
-    const rawJson = json?.choices?.[0]?.message?.content ?? "";
-    let data: unknown;
-    try {
-      data = JSON.parse(rawJson);
-    } catch {
-      return { error: "Resposta da IA não é um JSON válido." };
-    }
+    const jsonResult = parseOpenRouterJson<unknown>(aiResult.content);
+    if (!jsonResult.ok) return { error: jsonResult.error };
 
-    const parsed = projectStrategicInsightPayloadSchema.safeParse(data);
+    const parsed = projectStrategicInsightPayloadSchema.safeParse(jsonResult.data);
     if (!parsed.success) {
       return { error: `Resposta da IA em formato inesperado: ${parsed.error.errors[0]?.message ?? "inválido"}` };
     }

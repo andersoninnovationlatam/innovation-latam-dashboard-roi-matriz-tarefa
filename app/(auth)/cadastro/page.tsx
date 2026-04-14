@@ -27,6 +27,7 @@ type SignUpForm = z.infer<typeof signUpSchema>;
 export default function CadastroPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
 
   const {
     register,
@@ -43,8 +44,31 @@ export default function CadastroPage() {
       setError(result.error);
       return;
     }
+    if (result.requiresConfirmation) {
+      setEmailSent(true);
+      return;
+    }
     router.push("/dashboard");
     router.refresh();
+  }
+
+  if (emailSent) {
+    return (
+      <main className="w-full max-w-[440px] relative">
+        <div className="bg-surface-container-lowest/80 backdrop-blur-xl p-10 rounded-xl shadow-[0_20px_40px_-10px_rgba(34,25,31,0.06)] text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-xl mb-2 shadow-lg shadow-primary/20">
+            <Mail className="text-on-primary w-7 h-7" />
+          </div>
+          <h2 className="font-headline font-extrabold text-xl text-primary">Confirme seu e-mail</h2>
+          <p className="font-body text-on-surface-variant text-sm">
+            Enviamos um link de confirmação para o seu e-mail. Clique nele para ativar sua conta.
+          </p>
+          <Link className="text-primary font-bold hover:underline text-sm" href="/login">
+            Voltar para o login
+          </Link>
+        </div>
+      </main>
+    );
   }
 
   return (

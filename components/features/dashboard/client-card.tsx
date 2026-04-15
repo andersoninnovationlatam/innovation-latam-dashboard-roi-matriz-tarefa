@@ -39,10 +39,10 @@ export function ClientCard({
 
   const lastMeetingDate = latestMeeting
     ? formatDateOnlyLocal(latestMeeting.meeting_date, locale, {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
     : t("client_card_na");
 
   return (
@@ -66,7 +66,7 @@ export function ClientCard({
             </div>
             <HealthBadge status={latestHealth} />
           </div>
-          <div className="bg-surface-container-low p-4 rounded-lg">
+          {/*<div className="bg-surface-container-low p-4 rounded-lg">
             <p className="text-xs font-bold text-on-surface-variant mb-2 flex items-center gap-1 uppercase tracking-wide">
               <FileText className="w-3 h-3" />
               {t("client_card_parecer_title")}
@@ -74,7 +74,7 @@ export function ClientCard({
             <p className="text-sm text-on-surface leading-relaxed italic">
               "{excerpt}"
             </p>
-          </div>
+          </div>*/}
           <div className="flex justify-end gap-4 pt-2">
             {/* Contagem de projetos ativos (active_projects na view) — desativada até o dado estar correto
             <div className="flex flex-col">
@@ -85,7 +85,7 @@ export function ClientCard({
                 {activeProjects}
               </span>
             </div>
-            */}
+            
             <div className="flex flex-col items-end">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase">
                 {t("client_card_last_meeting")}
@@ -93,7 +93,7 @@ export function ClientCard({
               <span className="text-sm font-semibold text-on-surface">
                 {lastMeetingDate}
               </span>
-            </div>
+            </div>*/}
           </div>
         </div>
         <div className="mt-auto p-4 bg-surface-container-high/30 flex justify-between items-center border-t border-outline-variant/10">

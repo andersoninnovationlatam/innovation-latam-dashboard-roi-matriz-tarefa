@@ -151,20 +151,23 @@ export async function generateInsightsAction(meetingId: string) {
 
   const { error: upsertError } = await supabase
     .from("meeting_insights")
-    .update({
-      perfilador: insights.perfilador,
-      advogado_diabo: insights.advogado_diabo,
-      auditor_entregas: insights.auditor_entregas,
-      arquiteto: insights.arquiteto,
-      estrategista: insights.estrategista,
-      temperatura: insights.temperatura,
-      compromissos: insights.compromissos,
-      validacao_entregas: insights.validacao_entregas,
-      contexto_tecnico: insights.contexto_tecnico,
-      parecer_geral: insights.parecer_geral,
-      health_status: insights.health_status,
-    })
-    .eq("meeting_id", meetingId);
+    .upsert(
+      {
+        meeting_id: meetingId,
+        perfilador: insights.perfilador,
+        advogado_diabo: insights.advogado_diabo,
+        auditor_entregas: insights.auditor_entregas,
+        arquiteto: insights.arquiteto,
+        estrategista: insights.estrategista,
+        temperatura: insights.temperatura,
+        compromissos: insights.compromissos,
+        validacao_entregas: insights.validacao_entregas,
+        contexto_tecnico: insights.contexto_tecnico,
+        parecer_geral: insights.parecer_geral,
+        health_status: insights.health_status,
+      },
+      { onConflict: "meeting_id" }
+    );
 
   if (upsertError) {
     return { error: upsertError.message };

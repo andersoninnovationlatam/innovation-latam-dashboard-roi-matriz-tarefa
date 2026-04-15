@@ -2,6 +2,7 @@
 -- Escrita (insert/update/delete) fica só para gestor (políticas existentes "gestor full access").
 
 drop policy if exists "meetings: consultor cria e edita atribuidos" on public.meetings;
+drop policy if exists "meetings: consultor le atribuidos" on public.meetings;
 
 create policy "meetings: consultor le atribuidos"
   on public.meetings
@@ -12,6 +13,7 @@ create policy "meetings: consultor le atribuidos"
   );
 
 drop policy if exists "insights: consultor cria e edita" on public.meeting_insights;
+drop policy if exists "insights: consultor le" on public.meeting_insights;
 
 create policy "insights: consultor le"
   on public.meeting_insights

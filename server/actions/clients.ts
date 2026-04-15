@@ -87,6 +87,7 @@ export async function getClientOverview(): Promise<ClientOverviewItem[]> {
 
   const pchList = (pchRows ?? []) as ProjectCurrentHealth[];
 
+
   return typed.map((row) => {
     const client: Client = {
       id: row.client_id,
@@ -99,15 +100,23 @@ export async function getClientOverview(): Promise<ClientOverviewItem[]> {
     const best = pickLatestProjectForClient(pchList, row.client_id);
     let latestMeeting: Meeting | null = null;
     let parecerExcerpt = "";
-    if (best?.latest_meeting_id && best.latest_meeting_date) {
+    if (best?.latest_meeting_date) {
       latestMeeting = {
-        id: best.latest_meeting_id,
+        id: best.latest_meeting_id ?? "",
         project_id: best.project_id,
         meeting_date: best.latest_meeting_date,
         title: best.latest_meeting_title ?? "",
         created_at: best.latest_meeting_date,
       };
       parecerExcerpt = (best.parecer_geral ?? "").trim();
+    } else if (row.last_meeting_date) {
+      latestMeeting = {
+        id: "",
+        project_id: "",
+        meeting_date: row.last_meeting_date,
+        title: "",
+        created_at: row.last_meeting_date,
+      };
     }
 
     return {
@@ -197,9 +206,9 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
   const best = pickLatestProjectForClient(pchList, clientId);
   let latestMeeting: Meeting | null = null;
   let latestParecer: string | null = null;
-  if (best?.latest_meeting_id && best.latest_meeting_date) {
+  if (best?.latest_meeting_date) {
     latestMeeting = {
-      id: best.latest_meeting_id,
+      id: best.latest_meeting_id ?? "",
       project_id: best.project_id,
       meeting_date: best.latest_meeting_date,
       title: best.latest_meeting_title ?? "",

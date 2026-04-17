@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { DeleteMeetingButton } from "@/components/features/dashboard/delete-meeting-button";
+import { EditMeetingForm } from "@/components/features/forms/edit-meeting-form";
 import {
   ChevronRight,
   User,
@@ -20,6 +22,7 @@ import {
   XCircle,
   Circle,
   ArrowRight,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -75,6 +78,9 @@ export interface MeetingInsightViewProps {
   projetoId: string;
   reuniaoId: string;
   canDelete: boolean;
+  canEdit: boolean;
+  meetingDate: string;
+  rawNotes: string | null;
   projectName: string | null;
   meetingTitle: string;
   healthStatus: HealthStatus;
@@ -112,6 +118,9 @@ export function MeetingInsightView({
   projetoId,
   reuniaoId,
   canDelete,
+  canEdit,
+  meetingDate,
+  rawNotes,
   projectName,
   meetingTitle,
   healthStatus,
@@ -132,6 +141,7 @@ export function MeetingInsightView({
 }: MeetingInsightViewProps) {
   const { lang, t } = useLanguage();
   const locale = lang === "pt" ? "pt-BR" : "en-US";
+  const [isEditing, setIsEditing] = useState(false);
 
   const execSummary =
     executiveSummary?.trim() ? executiveSummary : t("meet_no_exec_summary");
@@ -159,6 +169,15 @@ export function MeetingInsightView({
 
   return (
     <main className="max-w-[1440px] mx-auto p-12">
+      {isEditing && (
+        <EditMeetingForm
+          meetingId={reuniaoId}
+          initialTitle={meetingTitle}
+          initialDate={meetingDate}
+          initialNotes={rawNotes}
+          onClose={() => setIsEditing(false)}
+        />
+      )}
       <div className="mb-12">
         <div className="flex items-center gap-2 text-outline text-sm mb-2">
           <Link
@@ -175,6 +194,17 @@ export function MeetingInsightView({
             {t("meet_insight_panel")}
           </h1>
           <div className="flex items-center gap-3 pt-1">
+            {canEdit && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditing(true)}
+                className="flex items-center gap-2"
+              >
+                <Pencil className="w-4 h-4" />
+                {t("meet_edit_meeting")}
+              </Button>
+            )}
             {canDelete && (
               <DeleteMeetingButton
                 meetingId={reuniaoId}

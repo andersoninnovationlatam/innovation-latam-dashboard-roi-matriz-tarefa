@@ -15,7 +15,7 @@ export type ClientDetailProjectRow = {
   description: string;
   status: ProjectStatus;
   healthStatus: HealthStatus;
-  completion: number;
+  completion: number | null;
 };
 
 function projectStatusTranslationKey(status: ProjectStatus): TranslationKey {
@@ -38,7 +38,7 @@ interface ClientDetailViewProps {
   clientCode: string;
   clientName: string;
   clientHealth: HealthStatus;
-  healthIndex: number;
+  healthIndex: number | null;
   projects: ClientDetailProjectRow[];
   latestMeeting: Meeting | null;
   latestParecer: string | null;
@@ -87,22 +87,30 @@ export function ClientDetailView({
           <span className="text-xs font-bold text-outline uppercase tracking-widest">
             {t("client_detail_health_index")}
           </span>
-          <div className="w-full bg-surface-container-high h-4 rounded-full overflow-hidden">
-            <div
-              className={`${healthColor} h-full rounded-full`}
-              style={{ width: `${healthIndex}%` }}
-            />
-          </div>
-          <span
-            className={`text-3xl font-black font-headline ${clientHealth === "critical"
-                ? "text-error"
-                : clientHealth === "warning"
-                  ? "text-amber-500"
-                  : "text-secondary"
-              }`}
-          >
-            {healthIndex}%
-          </span>
+          {healthIndex !== null ? (
+            <>
+              <div className="w-full bg-surface-container-high h-4 rounded-full overflow-hidden">
+                <div
+                  className={`${healthColor} h-full rounded-full`}
+                  style={{ width: `${healthIndex}%` }}
+                />
+              </div>
+              <span
+                className={`text-3xl font-black font-headline ${clientHealth === "critical"
+                    ? "text-error"
+                    : clientHealth === "warning"
+                      ? "text-amber-500"
+                      : "text-secondary"
+                  }`}
+              >
+                {healthIndex}%
+              </span>
+            </>
+          ) : (
+            <span className="text-sm text-on-surface-variant italic">
+              {t("client_detail_no_ai_data")}
+            </span>
+          )}
         </div>
       </section>
 
@@ -154,7 +162,7 @@ export function ClientDetailView({
                       </td>
                       <td className="py-6 text-right">
                         <span className="font-headline font-bold text-on-surface">
-                          {project.completion}%
+                          {project.completion !== null ? `${project.completion}%` : "—"}
                         </span>
                       </td>
                     </tr>

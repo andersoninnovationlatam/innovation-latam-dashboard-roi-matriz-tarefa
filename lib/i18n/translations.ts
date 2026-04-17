@@ -63,6 +63,7 @@ const translations = {
 
     // Client detail page
     client_detail_health_index: "Índice de saúde do cliente",
+    client_detail_no_ai_data: "Gere insights para ver o índice",
     client_detail_hero_placeholder:
       "Operador logístico multimodal de referência. Foco em transporte costeiro e gestão de terminais na região do Mercosul.",
     client_detail_strategic_initiatives: "Iniciativas estratégicas",
@@ -153,6 +154,7 @@ const translations = {
 
     // Meeting
     meet_insight_panel: "Painel de Insights da Reunião",
+    meet_edit_meeting: "Editar Reunião",
     meet_generate_insights: "Gerar Insights com IA",
     meet_generating: "Gerando Insights...",
     meet_add_notes: "Adicione notas à reunião para ativar.",
@@ -315,6 +317,7 @@ const translations = {
 
     // Client detail page
     client_detail_health_index: "Client Health Index",
+    client_detail_no_ai_data: "Generate insights to view the index",
     client_detail_hero_placeholder:
       "Leading multimodal logistics operator. Primary focus on coastal shipping and terminal management across the Mercosur region.",
     client_detail_strategic_initiatives: "Strategic Initiatives",
@@ -403,6 +406,7 @@ const translations = {
 
     // Meeting
     meet_insight_panel: "Meeting Insight Panel",
+    meet_edit_meeting: "Edit Meeting",
     meet_generate_insights: "Generate AI Insights",
     meet_generating: "Generating Insights...",
     meet_add_notes: "Add meeting notes to activate.",

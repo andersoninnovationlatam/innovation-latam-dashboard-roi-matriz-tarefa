@@ -15,6 +15,7 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
 
   const role = await getUserRole();
   const canDelete = role === "gestor" || role === "consultor";
+  const canEdit = role === "gestor";
 
   let meetingData;
   try {
@@ -26,13 +27,11 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
   const { meeting, insights } = meetingData;
   const project = (meeting as { projects?: { name?: string; clients?: unknown } }).projects;
 
-  if (!insights) {
+  if (!insights || !insights.health_status) {
     return <MeetingInsightUnavailable clienteId={clienteId} projetoId={projetoId} />;
   }
 
-  // Fallbacks conservadores: "warning" e "moderate" são mais seguros do que
-  // assumir "ok"/"low" quando o campo não veio preenchido pela IA.
-  const healthStatus = insights.health_status ?? "warning";
+  const healthStatus = insights.health_status;
   const participants = insights.perfilador?.participants ?? [];
   const risks = insights.advogado_diabo?.risks ?? [];
   const deliveries = insights.auditor_entregas?.deliveries ?? [];
@@ -42,7 +41,7 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
   const mainPain = insights.contexto_tecnico?.main_pain ?? "N/A";
   const impactScore = insights.estrategista?.impact_score ?? "N/A";
   const executiveSummary = insights.estrategista?.executive_summary ?? null;
-  const temperaturaLevel = insights.temperatura?.level ?? "moderate";
+  const temperaturaLevel = insights.temperatura?.level ?? "low";
   const temperaturaSignals = insights.temperatura?.signals ?? [];
   const commitments = insights.compromissos?.commitments ?? [];
   const clientPending = insights.validacao_entregas?.client_pending ?? [];
@@ -54,6 +53,9 @@ export default async function MeetingInsightPage({ params }: MeetingInsightPageP
       projetoId={projetoId}
       reuniaoId={reuniaoId}
       canDelete={canDelete}
+      canEdit={canEdit}
+      meetingDate={meeting.meeting_date}
+      rawNotes={(meeting as { raw_notes?: string | null }).raw_notes ?? null}
       projectName={project?.name ?? null}
       meetingTitle={meeting.title}
       healthStatus={healthStatus}

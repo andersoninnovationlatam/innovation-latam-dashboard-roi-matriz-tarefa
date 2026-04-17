@@ -104,14 +104,6 @@ export async function getClientOverview(): Promise<ClientOverviewItem[]> {
         created_at: best.latest_meeting_date,
       };
       parecerExcerpt = (best.parecer_geral ?? "").trim();
-    } else if (row.last_meeting_date) {
-      latestMeeting = {
-        id: "",
-        project_id: "",
-        meeting_date: row.last_meeting_date,
-        title: "",
-        created_at: row.last_meeting_date,
-      };
     }
 
     return {
@@ -133,10 +125,10 @@ export type ClientDetailData = {
     /** `projects.status` (enum tipo `project_status` no Postgres). */
     status: ProjectStatus;
     healthStatus: HealthStatus;
-    completion: number;
+    completion: number | null;
   }>;
   clientHealth: HealthStatus;
-  healthIndex: number;
+  healthIndex: number | null;
   latestMeeting: Meeting | null;
   latestParecer: string | null;
 };
@@ -180,7 +172,7 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
     const parsedVelocity = projectVelocityPayloadSchema.safeParse(p.ai_velocity);
     const velocityPercent = parsedVelocity.success ? parsedVelocity.data.percent : null;
     if (velocityPercent !== null) velocities.push(velocityPercent);
-    const completion = velocityPercent ?? (healthStatus === "ok" ? 92 : healthStatus === "warning" ? 68 : 40);
+    const completion = velocityPercent ?? null;
     return {
       id: p.id,
       name: p.name,
@@ -196,7 +188,7 @@ export async function getClientDetail(clientId: string): Promise<ClientDetailDat
   const healthIndex =
     velocities.length > 0
       ? Math.round(velocities.reduce((a, b) => a + b, 0) / velocities.length)
-      : clientHealth === "critical" ? 35 : clientHealth === "warning" ? 62 : 88;
+      : null;
 
   const best = pickLatestProjectForClient(pchList, clientId);
   let latestMeeting: Meeting | null = null;

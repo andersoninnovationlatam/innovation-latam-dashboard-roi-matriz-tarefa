@@ -131,3 +131,12 @@ export const createMeetingSchema = z.object({
 });
 
 export type CreateMeetingInput = z.infer<typeof createMeetingSchema>;
+
+export const updateMeetingSchema = z.object({
+  id: z.string().uuid("ID da reunião inválido"),
+  title: z.string().min(2, "Título deve ter pelo menos 2 caracteres"),
+  meeting_date: z.string().min(1, "Data obrigatória"),
+  raw_notes: z.string().optional(),
+});
+
+export type UpdateMeetingInput = z.infer<typeof updateMeetingSchema>;

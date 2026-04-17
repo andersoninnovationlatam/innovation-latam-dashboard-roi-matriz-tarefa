@@ -5,6 +5,8 @@ import { assertGestor } from "@/server/auth/role";
 import {
   createMeetingSchema,
   type CreateMeetingInput,
+  updateMeetingSchema,
+  type UpdateMeetingInput,
 } from "@/lib/schemas/meeting-insights";
 import type { MeetingInsights } from "@/lib/types/domain";
 
@@ -33,13 +35,30 @@ export async function createMeetingAction(data: CreateMeetingInput) {
     return { error: error?.message ?? "Não foi possível criar a reunião." };
   }
 
-  const { error: insightErr } = await supabase.from("meeting_insights").insert({
-    meeting_id: meeting.id,
-    health_status: "ok",
-  });
+  return { error: null };
+}
 
-  if (insightErr) {
-    return { error: insightErr.message };
+export async function updateMeetingAction(data: UpdateMeetingInput) {
+  const denied = await assertGestor();
+  if (denied) return denied;
+
+  const parsed = updateMeetingSchema.safeParse(data);
+  if (!parsed.success) {
+    return { error: parsed.error.errors[0]?.message ?? "Dados inválidos." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("meetings")
+    .update({
+      title: parsed.data.title,
+      meeting_date: parsed.data.meeting_date,
+      raw_notes: parsed.data.raw_notes ?? null,
+    })
+    .eq("id", parsed.data.id);
+
+  if (error) {
+    return { error: error.message };
   }
 
   return { error: null };

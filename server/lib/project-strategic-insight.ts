@@ -92,7 +92,7 @@ export async function regenerateProjectStrategicInsight(
       return { error: upErr.message };
     }
 
-    const vel = await regenerateProjectVelocity(projectId);
+    const vel = await regenerateProjectVelocity(projectId, loaded.meetings);
     if (vel.error) {
       console.warn("[project-strategic-insight] Velocidade não atualizada:", vel.error);
     }

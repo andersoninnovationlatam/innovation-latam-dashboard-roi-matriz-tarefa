@@ -201,39 +201,6 @@ export function ClientDetailView({
         </div>
 
         <div className="col-span-12 lg:col-span-5 space-y-8">
-          <div className="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-6 border border-outline-variant/10 shadow-sm">
-            <h4 className="text-xs font-bold text-outline uppercase tracking-widest mb-6">
-              {t("client_detail_engagement_overview")}
-            </h4>
-            <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-on-surface-variant">
-                  {t("client_detail_key_account_manager")}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-on-surface">
-                    {t("client_detail_tbd")}
-                  </span>
-                  <div className="w-6 h-6 rounded-full bg-surface-container-high" />
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-on-surface-variant">
-                  {t("client_detail_contract_value")}
-                </span>
-                <span className="text-sm font-semibold text-on-surface">
-                  {t("client_detail_tbd")}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-on-surface-variant">
-                  {t("client_detail_renewal_date")}
-                </span>
-                <span className="text-sm font-semibold text-error">{t("client_detail_tbd")}</span>
-              </div>
-            </div>
-          </div>
-
           {clientHealth === "critical" && (
             <div className="bg-surface-container-high rounded-xl p-6">
               <div className="flex items-center gap-2 mb-4">

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 const MAX_CONTEXT_CHARS = 14_000;
+const MAX_MEETINGS_FOR_AI = 10;
 
 function truncate(s: string, max: number): string {
   if (s.length <= max) return s;
@@ -125,7 +126,8 @@ export async function loadMeetingsForProjectAi(
     `
     )
     .eq("project_id", projectId)
-    .order("meeting_date", { ascending: false });
+    .order("meeting_date", { ascending: false })
+    .limit(MAX_MEETINGS_FOR_AI);
 
   if (mErr) {
     return { ok: false, error: mErr.message };

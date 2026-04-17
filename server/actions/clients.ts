@@ -71,19 +71,14 @@ export async function getClientOverview(): Promise<ClientOverviewItem[]> {
   const typed = healthRows as ClientCurrentHealth[];
   const clientIds = typed.map((r) => r.client_id);
 
-  const { data: clientMeta } = await supabase
-    .from("clients")
-    .select("id, created_at")
-    .in("id", clientIds);
+  const [{ data: clientMeta }, { data: pchRows }] = await Promise.all([
+    supabase.from("clients").select("id, created_at").in("id", clientIds),
+    supabase.from("project_current_health").select("*").in("client_id", clientIds),
+  ]);
 
   const createdMap = new Map(
     clientMeta?.map((c) => [c.id, c.created_at as string]) ?? []
   );
-
-  const { data: pchRows } = await supabase
-    .from("project_current_health")
-    .select("*")
-    .in("client_id", clientIds);
 
   const pchList = (pchRows ?? []) as ProjectCurrentHealth[];
 

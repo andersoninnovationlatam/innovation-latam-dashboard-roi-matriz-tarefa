@@ -100,7 +100,8 @@ export async function getProjectMeetings(projectId: string): Promise<MeetingRow[
     .from("meetings")
     .select("id, meeting_date, title, project_id, created_at")
     .eq("project_id", projectId)
-    .order("meeting_date", { ascending: false });
+    .order("meeting_date", { ascending: false })
+    .limit(30);
 
   const ids = meetings?.map((m) => m.id) ?? [];
   if (ids.length === 0) return [];

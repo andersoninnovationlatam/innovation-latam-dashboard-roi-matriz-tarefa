@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Manrope, Inter } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LanguageProvider } from "@/lib/i18n/language-context";
@@ -30,13 +31,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang = cookieStore.get("il-lang")?.value === "en" ? "en" : "pt-BR";
+
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         {process.env.NODE_ENV === "development" && (
           <Script

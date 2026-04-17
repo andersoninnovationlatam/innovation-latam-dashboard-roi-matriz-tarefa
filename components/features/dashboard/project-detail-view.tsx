@@ -12,7 +12,6 @@ import {
   CheckCircle,
   AlertCircle,
   BarChart3,
-  Edit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDateOnlyLocal } from "@/lib/date-only";
@@ -154,23 +153,11 @@ export function ProjectDetailView({
               </div>
             </div>
             {isGestor && (
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="h-10 w-10 rounded-xl border-outline-variant/40 shadow-sm"
-                  title={t("proj_edit")}
-                  aria-label={t("proj_edit")}
-                >
-                  <Edit className="w-5 h-5" />
-                </Button>
-                <DeleteProjectButton
-                  projectId={projetoId}
-                  clienteId={clienteId}
-                  className="!w-10 !h-10 rounded-xl shadow-sm hover:!scale-100 active:!scale-100"
-                />
-              </div>
+              <DeleteProjectButton
+                projectId={projetoId}
+                clienteId={clienteId}
+                className="!w-10 !h-10 rounded-xl shadow-sm hover:!scale-100 active:!scale-100"
+              />
             )}
           </div>
         </div>

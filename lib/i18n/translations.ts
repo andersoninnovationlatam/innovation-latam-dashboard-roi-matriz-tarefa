@@ -116,16 +116,11 @@ const translations = {
     proj_breadcrumb_client_fallback: "Cliente",
     proj_breadcrumb_project_fallback: "Projeto",
     proj_no_description: "Sem descrição disponível.",
-    proj_mock_milestone_name: "Corte de migração do banco",
-    proj_ai_insight_body:
-      "O delta da migração sugere um ponto de alta fricção na estratégia de integração. O sentimento dos stakeholders mudou desde a entrevista inicial.",
     proj_ai_insight_empty:
       "O insight estratégico será gerado automaticamente ao registrar reuniões e ao atualizar insights das reuniões. É necessária chave da API de IA (OpenRouter) no ambiente do servidor.",
     proj_ai_insight_empty_actions:
       "Nenhuma ação sugerida até haver um insight gerado.",
     proj_efficiency_tag: "Eficiência otimizável",
-    proj_ai_action_1: "Realinhar restrições de arquitetura com o time de API.",
-    proj_ai_action_2: "Tratar backlog de segurança do kickoff.",
     proj_status_label: "Status:",
     proj_meet_status_critical: "Crítico",
     proj_meet_status_warning: "Atenção",
@@ -138,18 +133,10 @@ const translations = {
       "Gere o insight estratégico para ver próximas ações com base em compromissos e auditor de entregas das reuniões.",
     proj_upcoming_actions_empty:
       "Nenhum item pendente em compromissos ou auditor de entregas nos dados analisados. Gere o insight novamente após novas reuniões.",
-    proj_action_api_freeze: "Congelamento do API Gateway",
-    proj_action_compliance: "Revisão de compliance",
-    proj_action_cloud_audit: "Auditoria do provedor cloud",
-    proj_due_2_days: "Em 2 dias",
-    proj_due_5_days: "Em 5 dias",
-    proj_due_8_days: "Em 8 dias",
     proj_edit: "Editar projeto",
     proj_expand_roadmap: "Expandir roadmap",
     proj_resource_burn: "Taxa de consumo de recursos",
     proj_optimized: "Otimizado",
-    proj_resource_burn_body:
-      "Os custos de infraestrutura estão 12% abaixo do orçamento graças ao uso eficiente do ambiente de staging.",
 
     // Meeting
     meet_insight_panel: "Painel de Insights da Reunião",
@@ -367,15 +354,10 @@ const translations = {
     proj_breadcrumb_client_fallback: "Client",
     proj_breadcrumb_project_fallback: "Project",
     proj_no_description: "No description available.",
-    proj_mock_milestone_name: "Database Cutover",
-    proj_ai_insight_body:
-      "The migration delta suggests a high friction point in the integration strategy. Stakeholder sentiment has shifted since the initial interview.",
     proj_ai_insight_empty:
       "Strategic insight is generated automatically when you add meetings and when meeting insights are updated. An OpenRouter API key must be configured on the server.",
     proj_ai_insight_empty_actions: "No suggested actions until an insight is generated.",
     proj_efficiency_tag: "Efficiency Optimizable",
-    proj_ai_action_1: "Re-align architectural constraints with API team.",
-    proj_ai_action_2: "Address security backlog from kickoff.",
     proj_status_label: "Status:",
     proj_meet_status_critical: "Critical",
     proj_meet_status_warning: "Warning",
@@ -388,18 +370,10 @@ const translations = {
       "Generate the strategic insight to see upcoming actions from meeting commitments and delivery audit data.",
     proj_upcoming_actions_empty:
       "No pending items in commitments or delivery audit in the analyzed data. Regenerate the insight after new meetings.",
-    proj_action_api_freeze: "API Gateway Freeze",
-    proj_action_compliance: "Compliance Review",
-    proj_action_cloud_audit: "Cloud Provider Audit",
-    proj_due_2_days: "Due in 2 days",
-    proj_due_5_days: "Due in 5 days",
-    proj_due_8_days: "Due in 8 days",
     proj_edit: "Edit project",
     proj_expand_roadmap: "Expand Roadmap",
     proj_resource_burn: "Resource Burn Rate",
     proj_optimized: "Optimized",
-    proj_resource_burn_body:
-      "Infrastructure costs are currently 12% under budget due to efficient staging utilization.",
 
     // Meeting
     meet_insight_panel: "Meeting Insight Panel",
@@ -467,7 +441,7 @@ const translations = {
     admin_title: "Admin Panel",
     admin_subtitle: "User management and system administration.",
     admin_total_users: "Total Users",
-    admin_gestores: "Gestores",
+    admin_gestores: "Managers",
     admin_consultores: "Consultants",
     admin_directory: "User Directory",
     admin_invite: "Invite User",

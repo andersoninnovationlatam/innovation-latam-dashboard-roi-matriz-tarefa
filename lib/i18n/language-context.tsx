@@ -39,6 +39,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const setLang = useCallback((newLang: Lang) => {
     setLangState(newLang);
     localStorage.setItem(STORAGE_KEY, newLang);
+    document.cookie = `${STORAGE_KEY}=${newLang};path=/;max-age=31536000;SameSite=Lax`;
     document.documentElement.lang = newLang === "pt" ? "pt-BR" : "en";
   }, []);
 

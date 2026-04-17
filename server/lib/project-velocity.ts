@@ -4,7 +4,11 @@ import {
   projectVelocityPayloadSchema,
   type ProjectVelocityPayload,
 } from "@/lib/schemas/project-velocity";
-import { buildProjectAiContextString, loadMeetingsForProjectAi } from "@/server/lib/project-ai-context";
+import {
+  buildProjectAiContextString,
+  loadMeetingsForProjectAi,
+  type MeetingForAiContext,
+} from "@/server/lib/project-ai-context";
 import { callOpenRouter, parseOpenRouterJson } from "@/server/lib/openrouter";
 
 function buildVelocityPrompt(context: string): string {
@@ -50,7 +54,8 @@ export type RegenerateProjectVelocityResult = {
  * Gera e persiste `projects.ai_velocity` via OpenRouter (mesmo contexto das reuniões do insight estratégico).
  */
 export async function regenerateProjectVelocity(
-  projectId: string
+  projectId: string,
+  preloadedMeetings?: MeetingForAiContext[]
 ): Promise<RegenerateProjectVelocityResult> {
   try {
     const supabase = await createClient();
@@ -65,18 +70,23 @@ export async function regenerateProjectVelocity(
       return { error: "Projeto não encontrado.", payload: null };
     }
 
-    const loaded = await loadMeetingsForProjectAi(supabase, projectId);
-    if (!loaded.ok) {
-      return { error: loaded.error, payload: null };
+    let meetings: MeetingForAiContext[];
+    if (preloadedMeetings) {
+      meetings = preloadedMeetings;
+    } else {
+      const loaded = await loadMeetingsForProjectAi(supabase, projectId);
+      if (!loaded.ok) return { error: loaded.error, payload: null };
+      meetings = loaded.meetings;
     }
-    if (!loaded.meetings.length) {
+
+    if (!meetings.length) {
       return { error: "Não há reuniões neste projeto para estimar a velocidade.", payload: null };
     }
 
     const context = buildProjectAiContextString({
       projectName: project.name,
       projectDescription: project.description,
-      meetings: loaded.meetings,
+      meetings,
     });
 
     const aiResult = await callOpenRouter({

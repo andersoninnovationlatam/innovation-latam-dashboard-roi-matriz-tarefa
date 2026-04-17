@@ -79,9 +79,9 @@ export function ClientDetailView({
           <h1 className="text-5xl font-extrabold text-on-surface tracking-tight mb-2 font-headline">
             {clientName}
           </h1>
-          <p className="text-on-surface-variant text-lg max-w-2xl font-body">
+          {/*<p className="text-on-surface-variant text-lg max-w-2xl font-body">
             {t("client_detail_hero_placeholder")}
-          </p>
+          </p>*/}
         </div>
         <div className="flex flex-col items-end gap-2">
           <span className="text-xs font-bold text-outline uppercase tracking-widest">
@@ -94,13 +94,12 @@ export function ClientDetailView({
             />
           </div>
           <span
-            className={`text-3xl font-black font-headline ${
-              clientHealth === "critical"
+            className={`text-3xl font-black font-headline ${clientHealth === "critical"
                 ? "text-error"
                 : clientHealth === "warning"
                   ? "text-amber-500"
                   : "text-secondary"
-            }`}
+              }`}
           >
             {healthIndex}%
           </span>

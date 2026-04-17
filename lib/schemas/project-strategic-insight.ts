@@ -10,9 +10,9 @@ export const projectUpcomingActionItemSchema = z.object({
 export const projectStrategicInsightPayloadSchema = z.object({
   body: z.string().min(1).max(6000),
   tag: z.string().min(1).max(200),
-  actions: z.array(z.string().min(1).max(500)).min(1).max(5),
+  actions: z.array(z.string().min(1).max(500)).min(1),
   upcoming_actions: z
-    .union([z.array(projectUpcomingActionItemSchema).max(5), z.null(), z.undefined()])
+    .union([z.array(projectUpcomingActionItemSchema), z.null(), z.undefined()])
     .transform((v) => (Array.isArray(v) ? v : [])),
 });
 

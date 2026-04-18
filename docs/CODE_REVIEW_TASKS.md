@@ -817,10 +817,10 @@ if (existingInsight?.updated_at) {
 | TASK-13 | Evitar dupla carga de contexto (insight + velocity) | `server/lib/project-strategic-insight.ts` | 🟠 Alta | ⬜ |
 | TASK-14 | Remover/conectar campos TBD do relacionamento | `components/.../client-detail-view.tsx:201` | 🟠 Alta | ⬜ |
 | TASK-15 | Implementar ou remover botão "Editar Projeto" | `components/.../project-detail-view.tsx:158` | 🟠 Alta | ⬜ |
-| TASK-16 | Remover código comentado do Próximo Marco | `components/.../project-detail-view.tsx:225` | 🟡 Média | ⬜ |
-| TASK-17 | Corrigir fallback `created_at` com data atual | `server/actions/clients.ts:97` | 🟡 Média | ⬜ |
-| TASK-18 | Mover favicon para hospedagem local | `app/layout.tsx:21` | 🟡 Média | ⬜ |
-| TASK-19 | Corrigir link "Ver histórico de reuniões" | `components/.../client-detail-view.tsx:184` | 🟡 Média | ⬜ |
-| TASK-20 | IA: inferir campos de relacionamento via OpenRouter | `server/actions/clients.ts` | 🟡 Média | ⬜ |
+| TASK-16 | Remover código comentado do Próximo Marco | `components/.../project-detail-view.tsx:225` | 🟡 Média | ✅ |
+| TASK-17 | Corrigir fallback `created_at` com data atual | `server/actions/clients.ts:97` | 🟡 Média | ✅ |
+| TASK-18 | Mover favicon para hospedagem local | `app/layout.tsx:21` | 🟡 Média | ✅ |
+| TASK-19 | Corrigir link "Ver histórico de reuniões" | `components/.../client-detail-view.tsx:184` | 🟡 Média | ✅ |
+| TASK-20 | IA: inferir campos de relacionamento via OpenRouter | `server/lib/client-engagement-insight.ts` | 🟡 Média | ✅ |
 | TASK-21 | IA: gerar descrição automática de cliente | `server/actions/clients.ts:236` | 🔵 Baixa | ⬜ |
 | TASK-22 | Rate limiting na geração de insights | `server/actions/ai-insights.ts:115` | 🔵 Baixa | ⬜ |

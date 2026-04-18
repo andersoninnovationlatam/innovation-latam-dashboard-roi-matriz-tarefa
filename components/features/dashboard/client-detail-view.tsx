@@ -190,7 +190,7 @@ export function ClientDetailView({
                 </div>
               )}
               <Link
-                href={`/dashboard/clientes/${clienteId}/projetos/${latestMeeting.project_id}/reunioes/${latestMeeting.id}`}
+                href={`/dashboard/clientes/${clienteId}/projetos/${latestMeeting.project_id}`}
                 className="inline-flex items-center gap-2 text-primary font-bold text-sm group"
               >
                 {t("client_detail_full_meeting_history")}

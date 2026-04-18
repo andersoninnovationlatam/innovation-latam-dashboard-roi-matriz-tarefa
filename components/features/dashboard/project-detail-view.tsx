@@ -209,21 +209,6 @@ export function ProjectDetailView({
                 </div>
               </div>
             )}
-            {/*{strategicInsight?.upcoming_actions && strategicInsight.upcoming_actions.length > 0 && (
-              <div className="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4">
-                <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">
-                  {t("proj_milestone")}
-                </span>
-                {strategicInsight.upcoming_actions[0].due_hint && (
-                  <div className="text-3xl font-headline font-extrabold text-tertiary">
-                    {strategicInsight.upcoming_actions[0].due_hint}
-                  </div>
-                )}
-                <div className="text-xs text-on-surface-variant font-medium">
-                  {strategicInsight.upcoming_actions[0].title}
-                </div>
-              </div>
-            )}*/}
           </div>
 
           <section className="bg-white/50 dark:bg-surface-container-low dark:backdrop-blur-none backdrop-blur-md rounded-xl p-8 shadow-sm border border-outline-variant/15 dark:border-outline-variant/25">

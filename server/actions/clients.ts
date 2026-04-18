@@ -89,7 +89,7 @@ export async function getClientOverview(): Promise<ClientOverviewItem[]> {
       code: row.code,
       name: row.name,
       status: row.client_status,
-      created_at: createdMap.get(row.client_id) ?? new Date().toISOString(),
+      created_at: createdMap.get(row.client_id) ?? "",
     };
 
     const best = pickLatestProjectForClient(pchList, row.client_id);

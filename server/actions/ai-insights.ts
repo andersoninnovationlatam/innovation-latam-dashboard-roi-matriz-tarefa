@@ -112,11 +112,29 @@ Regras:
 - Retorne APENAS o JSON, sem texto adicional`;
 }
 
+const COOLDOWN_SECONDS = 30;
+
 export async function generateInsightsAction(meetingId: string) {
   const denied = await assertGestor();
   if (denied) return denied;
 
   const supabase = await createClient();
+
+  const { data: existingInsight } = await supabase
+    .from("meeting_insights")
+    .select("updated_at")
+    .eq("meeting_id", meetingId)
+    .maybeSingle();
+
+  if (existingInsight?.updated_at) {
+    const secondsSinceLast =
+      (Date.now() - new Date(existingInsight.updated_at).getTime()) / 1000;
+    if (secondsSinceLast < COOLDOWN_SECONDS) {
+      return {
+        error: `Aguarde ${Math.ceil(COOLDOWN_SECONDS - secondsSinceLast)}s antes de gerar novamente.`,
+      };
+    }
+  }
 
   const { data: meeting, error: meetingError } = await supabase
     .from("meetings")

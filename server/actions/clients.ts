@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { assertGestor } from "@/server/auth/role";
 import { createClientSchema, type CreateClientInput } from "@/lib/schemas/meeting-insights";
 import { projectVelocityPayloadSchema } from "@/lib/schemas/project-velocity";
+import { generateClientDescription } from "@/server/lib/client-description";
 import type {
   Client,
   ClientCurrentHealth,
@@ -230,15 +231,23 @@ export async function createClientAction(data: CreateClientInput) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("clients").insert({
-    code: parsed.data.code,
-    name: parsed.data.name,
-    status: parsed.data.status,
-  });
+  const { data: inserted, error } = await supabase
+    .from("clients")
+    .insert({
+      code: parsed.data.code,
+      name: parsed.data.name,
+      status: parsed.data.status,
+    })
+    .select("id, name")
+    .single();
 
   if (error) {
     return { error: error.message };
   }
+
+  generateClientDescription(inserted.id, inserted.name).catch((err) =>
+    console.warn("[createClient] Falha ao gerar descrição:", err)
+  );
 
   return { error: null };
 }

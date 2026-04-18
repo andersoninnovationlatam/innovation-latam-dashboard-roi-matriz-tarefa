@@ -822,5 +822,5 @@ if (existingInsight?.updated_at) {
 | TASK-18 | Mover favicon para hospedagem local | `app/layout.tsx:21` | 🟡 Média | ⬜ |
 | TASK-19 | Corrigir link "Ver histórico de reuniões" | `components/.../client-detail-view.tsx:184` | 🟡 Média | ⬜ |
 | TASK-20 | IA: inferir campos de relacionamento via OpenRouter | `server/actions/clients.ts` | 🟡 Média | ⬜ |
-| TASK-21 | IA: gerar descrição automática de cliente | `server/actions/clients.ts:236` | 🔵 Baixa | ⬜ |
-| TASK-22 | Rate limiting na geração de insights | `server/actions/ai-insights.ts:115` | 🔵 Baixa | ⬜ |
+| TASK-21 | IA: gerar descrição automática de cliente | `server/lib/client-description.ts` | 🔵 Baixa | ✅ |
+| TASK-22 | Rate limiting na geração de insights | `server/actions/ai-insights.ts:115` | 🔵 Baixa | ✅ |
